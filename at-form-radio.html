@@ -1,0 +1,134 @@
+<link rel="import" href="../at-core-theme/at-core-theme.html">
+
+<dom-module id="at-form-radio">
+
+  <template>
+    <at-core-theme></at-core-theme>
+    <div class="ui form">
+      <div id="field" class="field">
+        <label id="label">{{label}}</label>
+      </div>
+    </div>
+    <div class="ui form">
+      <div class="grouped fields" id="insertPoint">
+      </div>
+    </div>
+  </template>
+
+  <script>
+    Polymer({
+      is: 'at-form-radio',
+      properties: {
+        label: {
+          type: String,
+          value: 'at-form-radio'
+        },
+        valuelist: {
+          type: Array,
+          value: function() {
+            return [];
+          },
+          observer: 'valuelistChanged'
+        },
+        value: {
+          type: Object,
+          value: function() {
+            return {
+              title: '',
+              value: ''
+            }
+          },
+          observer: 'valueChanged'
+        },
+        required: {
+          type: Boolean,
+          value: false
+        },
+        disabled: {
+          type: Boolean,
+          value: false
+        }
+      },
+      _scopeCssViaAttr: true,
+      ready: function() {
+        this._attachEvents();
+      },
+      valuelistChanged: function(newValue, oldValue) {
+        var self = this;
+
+        newValue.forEach(function(element, index, array) {
+          var fieldHtml = self._constructRadioField(element);
+          Polymer.dom(self.$.insertPoint).appendChild(fieldHtml);
+        });
+
+        this._attachEvents();
+      },
+      valueChanged: function(newValue, oldValue) {
+
+      },
+      _clearChecked: function() {
+        var
+          selectedInputs = Polymer.dom(this.root).querySelectorAll('input[checked]'),
+          len = selectedInputs.length,
+          index,
+          selectedInput;
+
+        for (index = 0; index < len; index += 1) {
+          selectedInput = selectedInputs[index];
+          selectedInput.removeAttribute('checked');
+        }
+      },
+      _attachEvents: function() {
+        var
+          radioBoxes = Polymer.dom(this.root).querySelectorAll('.ui .checkbox'),
+          len = radioBoxes.length,
+          index,
+          radioBox,
+          self = this;
+
+        for (index = 0; index < len; index += 1) {
+          radioBox = radioBoxes[index];
+
+          radioBox.addEventListener('click', function(event) {
+            self._clearChecked();
+            var currentTarget = event.currentTarget;
+            var input = currentTarget.querySelector('input');
+            input.setAttribute('checked', 'checked');
+          });
+        }
+      },
+      /*
+        function _constructRadioField creates this div
+        <div class="field">
+          <div class="ui radio checkbox">
+            <input type="radio">
+            <label>Once a day</label>
+          </div>
+        </div>
+      */
+      _constructRadioField: function(data) {
+        var
+          fieldDiv = document.createElement('div'),
+          radioDiv = document.createElement('div'),
+          inputEl = document.createElement('input'),
+          labelEl = document.createElement('label');
+
+        Polymer.dom(fieldDiv).classList.add('field');
+        Polymer.dom(radioDiv).classList.add('ui');
+        Polymer.dom(radioDiv).classList.add('radio');
+        Polymer.dom(radioDiv).classList.add('checkbox');
+
+        Polymer.dom(labelEl).innerHTML = data.title;
+        Polymer.dom(inputEl).setAttribute('type', 'radio');
+        Polymer.dom(inputEl).setAttribute('value', data.value);
+
+        Polymer.dom(radioDiv).appendChild(inputEl);
+        Polymer.dom(radioDiv).appendChild(labelEl);
+        Polymer.dom(fieldDiv).appendChild(radioDiv);
+
+        return fieldDiv;
+      }
+    });
+  </script>
+
+</dom-module>

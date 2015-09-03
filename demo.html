@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <title>at-form-radio demo</title>
+
+  <script src="../webcomponentsjs/webcomponents-lite.js"></script>
+  <link rel="import" href="../polymer/polymer.html" />
+  <link rel="import" href="at-form-radio.html" />
+</head>
+
+<body>
+  <div id="wrapper">
+    <header>
+      This is at-form-radio demo
+    </header>
+    <section id="content">
+      <article>
+        <at-form-radio id="radio1"></at-form-radio>
+      </article>
+      <!--
+      <article>
+        <at-form-radio id="radio2"></at-form-radio>
+      </article>
+      <article>
+        <at-form-radio id="radio3"></at-form-radio>
+      </article>
+       -->
+    </section>
+  </div>
+  <script>
+    document.addEventListener('WebComponentsReady', function(){
+      var
+        radio1 = document.getElementById('radio1'),
+        radio2 = document.getElementById('radio2'),
+        radio3 = document.getElementById('radio3')
+        ;
+
+        radio1.valuelist = [
+          {
+            title: 'Title1',
+            value: 'value1'
+          },
+          {
+            title: 'Title2',
+            value: 'value2'
+          },
+          {
+            title: 'Title3',
+            value: 'value3'
+          }
+        ];
+    });
+  </script>
+</body>
+
+</html>
