@@ -22,7 +22,9 @@
         </header>
         <article>
           <div class="">
-            <p id="radio1ValueEcho"></p>
+            <p>
+              This is radio1 echo: <span id="radio1ValueEcho"></span>
+            </p>
           </div>
           <div class="">
             <at-form-radio id="radio1"></at-form-radio>
@@ -30,7 +32,9 @@
         </article>
         <article>
           <div class="">
-            <p id="radio2ValueEcho"></p>
+            <p>
+              This is radio2 echo:<span id="radio2ValueEcho"></span>
+            </p>
           </div>
           <div class="">
             <at-form-radio id="radio2"></at-form-radio>
@@ -43,7 +47,9 @@
         </header>
         <article>
           <div class="">
-            <p id="radio3ValueEcho"></p>
+            <p>
+              This is radio3 echo: <span id="radio3ValueEcho"></span>
+            </p>
           </div>
           <div class="">
             <at-form-radio id="radio3"></at-form-radio>
@@ -51,7 +57,9 @@
         </article>
         <article>
           <div class="">
-            <p id="radio4ValueEcho"></p>
+            <p>
+              This is radio4 echo:  <span id="radio4ValueEcho"></span>
+            </p>
           </div>
           <div class="">
             <at-form-radio id="radio4"></at-form-radio>
@@ -65,7 +73,9 @@
         </header>
         <article>
           <div class="">
-            <p id="radio5ValueEcho"></p>
+            <p>
+              This is radio5 echo:  <span id="radio5ValueEcho"></span>
+            </p>
           </div>
           <div class="">
             <at-form-radio id="radio5" disabled></at-form-radio>
@@ -73,7 +83,9 @@
         </article>
         <article>
           <div class="">
-            <p id="radio6ValueEcho"></p>
+            <p>
+              This is radio6 echo:  <span id="radio6ValueEcho"></span>
+            </p>          
           </div>
           <div class="">
             <at-form-radio id="radio6" disabled></at-form-radio>
@@ -143,10 +155,7 @@
         value: 'plum'
       }];
 
-      radio3.value = {
-        title: 'Plum',
-        value: 'plum'
-      };
+      radio3.value = "plum";
 
       displayRadioValue(radio3, radio3ValueEcho);
       radio3.addEventListener('value-changed', function(event) {
@@ -155,7 +164,7 @@
 
       // ----- setup radio4 -----
       radio4.label = "How much does the web development suck?"
-      radio4.valuelist = "It doesn't, A little, It sucks, It sucks a lot, It totally sucks";
+      radio4.valuelist = "It doesnt, A little, It sucks, It sucks a lot, It totally sucks";
 
       radio4.value = 'It totally sucks';
 
@@ -177,10 +186,7 @@
         value: 'plum'
       }];
 
-      radio5.value = {
-        title: 'Plum',
-        value: 'plum'
-      };
+      radio5.value = "plum";
 
       displayRadioValue(radio5, radio5ValueEcho);
       radio5.addEventListener('value-changed', function(event) {
@@ -189,9 +195,9 @@
 
       // ----- setup radio4 -----
       radio6.label = "How much does the web development suck?"
-      radio6.valuelist = "It doesn't, A little, It sucks, It sucks a lot, It totally sucks";
+      radio6.valuelist = "It doesnt, A little, It sucks, It sucks a lot, It totally sucks";
 
-      radio6.value = 'It totally sucks';
+      radio6.value = "It totally sucks";
 
       displayRadioValue(radio6, radio6ValueEcho);
       radio6.addEventListener('value-changed', function(event) {

@@ -31,13 +31,8 @@
           observer: 'valuelistChanged'
         },
         value: {
-          type: Object,
-          value: function() {
-            return {
-              title: '',
-              value: ''
-            }
-          },
+          type: String,
+          value: '',
           observer: 'valueChanged'
         },
         required: {
@@ -68,8 +63,7 @@
         var input = Polymer.dom(self.$.insertPoint).querySelector('input');
         if (input !== undefined) {
           Polymer.dom(input).setAttribute('checked', 'checked');
-          this.value.value = newValue[0].value;
-          this.value.title = newValue[0].title;
+          this.value = newValue[0].value;
         }
 
         this._attachEvents();
@@ -77,18 +71,7 @@
         this.disabledChanged(this.disabled, this.disabled);
       },
       valueChanged: function(newValue, oldValue) {
-        if (this._isObject(newValue) && newValue.title !== undefined && newValue.value !== undefined) {
-          this._clearChecked();
-          // find the input with value = newValue.value and set check attribute
-          var input = Polymer.dom(this.$.insertPoint).querySelector("input[value='" + newValue.value + "']");
-          if (input) {
-            Polymer.dom(input).setAttribute('checked', 'checked');
-          }
-        } else if (this._isString(newValue)) {
-          this.value = {
-            title: newValue,
-            value: newValue
-          };
+        if (this._isString(newValue)) {
           this._clearChecked();
           // new value is string; use it as value to find the input
           var selector = "input[value='" + newValue + "']";
@@ -139,9 +122,8 @@
               var input = currentTarget.querySelector('input');
               input.setAttribute('checked', 'checked');
 
-              self.value.value = input.value;
-              self.value.title = input.getAttribute('data-title');
-              self.fire('value-changed', self.value);
+              self.value = input.value;
+              self.fire('value-changed', {value: self.value});
 
             }
           });
