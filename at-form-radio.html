@@ -46,7 +46,8 @@
         },
         disabled: {
           type: Boolean,
-          value: false
+          value: false,
+          observer: 'disabledChanged'
         }
       },
       _scopeCssViaAttr: true,
@@ -56,15 +57,57 @@
       valuelistChanged: function(newValue, oldValue) {
         var self = this;
 
+        // newValue can be CSV or array; detection needed and normlization to array
+        newValue = this._convertToArray(newValue);
+
         newValue.forEach(function(element, index, array) {
           var fieldHtml = self._constructRadioField(element);
           Polymer.dom(self.$.insertPoint).appendChild(fieldHtml);
         });
 
+        var input = Polymer.dom(self.$.insertPoint).querySelector('input');
+        if (input !== undefined) {
+          Polymer.dom(input).setAttribute('checked', 'checked');
+          this.value.value = newValue[0].value;
+          this.value.title = newValue[0].title;
+        }
+
         this._attachEvents();
+
+        this.disabledChanged(this.disabled, this.disabled);
       },
       valueChanged: function(newValue, oldValue) {
+        if (this._isObject(newValue) && newValue.title !== undefined && newValue.value !== undefined) {
+          this._clearChecked();
+          // find the input with value = newValue.value and set check attribute
+          var input = Polymer.dom(this.$.insertPoint).querySelector("input[value='" + newValue.value + "']");
+          if (input) {
+            Polymer.dom(input).setAttribute('checked', 'checked');
+          }
+        } else if (this._isString(newValue)) {
+          this.value = {
+            title: newValue,
+            value: newValue
+          };
+          this._clearChecked();
+          // new value is string; use it as value to find the input
+          var selector = "input[value='" + newValue + "']";
+          var input = Polymer.dom(this.$.insertPoint).querySelector(selector);
+          if (input) {
+            Polymer.dom(input).setAttribute('checked', 'checked');
+          }
+        }
+      },
+      disabledChanged: function(newValue, oldValue) {
+        var
+          inputs = Polymer.dom(this.$.insertPoint).querySelectorAll('input'),
+          len = inputs ? inputs.length : 0,
+          i, item;
 
+          for (var i = 0; i < len; i++) {
+            item = inputs[i];
+            this.toggleAttribute('disabled', newValue, item);
+          }
       },
       _clearChecked: function() {
         var
@@ -90,10 +133,17 @@
           radioBox = radioBoxes[index];
 
           radioBox.addEventListener('click', function(event) {
-            self._clearChecked();
-            var currentTarget = event.currentTarget;
-            var input = currentTarget.querySelector('input');
-            input.setAttribute('checked', 'checked');
+            if (!self.disabled) {
+              self._clearChecked();
+              var currentTarget = event.currentTarget;
+              var input = currentTarget.querySelector('input');
+              input.setAttribute('checked', 'checked');
+
+              self.value.value = input.value;
+              self.value.title = input.getAttribute('data-title');
+              self.fire('value-changed', self.value);
+
+            }
           });
         }
       },
@@ -122,11 +172,53 @@
         Polymer.dom(inputEl).setAttribute('type', 'radio');
         Polymer.dom(inputEl).setAttribute('value', data.value);
 
+        Polymer.dom(inputEl).setAttribute('data-title', data.title);
+
         Polymer.dom(radioDiv).appendChild(inputEl);
         Polymer.dom(radioDiv).appendChild(labelEl);
         Polymer.dom(fieldDiv).appendChild(radioDiv);
 
         return fieldDiv;
+      },
+      _convertToArray: function(object) {
+        var result = [];
+
+        if (this._isArray(object)) {
+          // object is already array; return
+          return object;
+        }
+
+        if (this._isString(object) && object.indexOf(',') !== -1) {
+          // object is CSV string; split, convert and return
+          var
+            splitItems = object.split(','),
+            len = splitItems.length,
+            i, item;
+          for (var i = 0; i < len; i++) {
+            item = splitItems[i];
+            item = item.trim();
+            result.push({
+              value: item,
+              title: item
+            });
+          }
+        } else if (this._isString(object)) {
+          result.push({
+            value: object,
+            title: object
+          });
+        }
+
+        return result;
+      },
+      _isArray: function(object) {
+        return Object.prototype.toString.call(object) === '[object Array]';
+      },
+      _isString: function(object) {
+        return Object.prototype.toString.call(object) === '[object String]';
+      },
+      _isObject: function(object) {
+        return Object.prototype.toString.call(object) === '[object Object]';
       }
     });
   </script>
