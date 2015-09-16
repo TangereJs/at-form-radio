@@ -52,6 +52,9 @@
       valuelistChanged: function(newValue, oldValue) {
         var self = this;
 
+        // clear previous html
+        Polymer.dom(this.$.insertPoint).innerHTML = '';
+
         // newValue can be CSV or array; detection needed and normlization to array
         newValue = this._convertToArray(newValue);
 
