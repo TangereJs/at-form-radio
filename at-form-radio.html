@@ -1,11 +1,15 @@
 <link rel="import" href="../at-core-theme/at-core-theme.html">
 
 <dom-module id="at-form-radio">
-
+  <style media="screen">
+    .hide-label {
+      display: none;
+    }
+  </style>
   <template>
     <at-core-theme></at-core-theme>
     <div class="ui form">
-      <div id="field" class="field">
+      <div id="labelContainer" class="field">
         <label id="label">{{label}}</label>
       </div>
     </div>
@@ -22,6 +26,11 @@
         label: {
           type: String,
           value: 'at-form-radio'
+        },
+        hideTitle: {
+          type: Boolean,
+          value: false,
+          observer: 'hideTitleChanged'
         },
         valuelist: {
           type: Array,
@@ -48,6 +57,9 @@
       _scopeCssViaAttr: true,
       ready: function() {
         this._attachEvents();
+      },
+      hideTitleChanged: function(newValue, oldValue) {
+        this.toggleClass("hide-label", newValue, this.$.labelContainer);
       },
       valuelistChanged: function(newValue, oldValue) {
         var self = this;
@@ -90,10 +102,10 @@
           len = inputs ? inputs.length : 0,
           i, item;
 
-          for (var i = 0; i < len; i++) {
-            item = inputs[i];
-            this.toggleAttribute('disabled', newValue, item);
-          }
+        for (var i = 0; i < len; i++) {
+          item = inputs[i];
+          this.toggleAttribute('disabled', newValue, item);
+        }
       },
       _clearChecked: function() {
         var
@@ -126,7 +138,9 @@
               input.setAttribute('checked', 'checked');
 
               self.value = input.value;
-              self.fire('value-changed', {value: self.value});
+              self.fire('value-changed', {
+                value: self.value
+              });
 
             }
           });
