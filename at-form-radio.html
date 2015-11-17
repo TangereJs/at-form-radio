@@ -131,6 +131,7 @@
           radioBox = radioBoxes[index];
 
           radioBox.addEventListener('click', function(event) {
+            event.stopPropagation();
             if (!self.disabled) {
               self._clearChecked();
               var currentTarget = event.currentTarget;
