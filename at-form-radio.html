@@ -39,6 +39,22 @@
           },
           observer: 'valuelistChanged'
         },
+        // ------------------------------------------------------------
+        // "Why is xvaluelist here?" - you ask.
+        // "We already have valuelist just above" - you say.
+        // xvaluelist is here to improve compatibility with copyProperties function in at-core-form/script/schema-helpers.js
+        // this function goes through element properties and copies property values from property definition in json schema to element properties
+        // now valuelist doens't exist in property definition in json schema so undefined will be copied
+        // xvaluelist exists in json schema and when property name is valuelist, xvaluelist should be copied
+        // so we introduce xvaluelist property in at-form-radio to remove if statement that would detect this situation
+        // ------------------------------------------------------------
+        xvaluelist: {
+          type: Array,
+          value: function() {
+            return [];
+          },
+          observer: 'valuelistChanged'
+        },
         value: {
           type: String,
           value: '',
