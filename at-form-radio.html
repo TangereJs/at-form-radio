@@ -27,10 +27,10 @@
           type: String,
           value: 'at-form-radio'
         },
-        hideTitle: {
+        hideLabel: {
           type: Boolean,
           value: false,
-          observer: 'hideTitleChanged'
+          observer: 'hideLabelChanged'
         },
         valuelist: {
           type: Array,
@@ -79,7 +79,7 @@
       ready: function() {
         this._attachEvents();
       },
-      hideTitleChanged: function(newValue, oldValue) {
+      hideLabelChanged: function(newValue, oldValue) {
         this.toggleClass("hide-label", newValue, this.$.labelContainer);
       },
       valuelistChanged: function(newValue, oldValue) {
