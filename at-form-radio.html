@@ -53,7 +53,21 @@
           value: function() {
             return [];
           },
-          observer: 'valuelistChanged'
+          observer: 'valuelistChanged',
+          schema: {
+            items: {
+              type: "object",
+              properties: {
+                title: {
+                  "type": "string"
+                },
+                value: {
+                  type: "string"
+                }
+              }
+            }
+          },
+          layout: 'horizontal'
         },
         value: {
           type: String,
