@@ -59,10 +59,12 @@
               type: "object",
               properties: {
                 title: {
-                  "type": "string"
+                  type: "string",
+                  title: "Title"
                 },
                 value: {
-                  type: "string"
+                  type: "string",
+                  title: "Value"
                 }
               }
             }
@@ -84,6 +86,9 @@
           observer: 'disabledChanged'
         }
       },
+      observers: [
+        'xvaluelistSpliceChanged(xvaluelist.splices)'
+      ],
       $meta: [{
         title: "Radio",
         type: "string",
@@ -119,6 +124,9 @@
         this._attachEvents();
 
         this.disabledChanged(this.disabled, this.disabled);
+      },
+      xvaluelistSpliceChanged: function (splices) {
+        this.valuelistChanged(this.xvaluelist, undefined);
       },
       valueChanged: function(newValue, oldValue) {
         if (this._isString(newValue)) {
