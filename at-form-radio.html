@@ -32,17 +32,8 @@
           value: false,
           observer: 'hideLabelChanged'
         },
-        valuelist: {
-          type: Array,
-          value: function() {
-            return [];
-          },
-          observer: 'valuelistChanged'
-        },
         // ------------------------------------------------------------
-        // "Why is xvaluelist here?" - you ask.
-        // "We already have valuelist just above" - you say.
-        // xvaluelist is here to improve compatibility with copyProperties function in at-core-form/script/schema-helpers.js
+        // valuelist renamed to xvaluelist is here to improve compatibility with copyProperties function in at-core-form/script/schema-helpers.js
         // this function goes through element properties and copies property values from property definition in json schema to element properties
         // now valuelist doens't exist in property definition in json schema so undefined will be copied
         // xvaluelist exists in json schema and when property name is valuelist, xvaluelist should be copied
@@ -53,7 +44,7 @@
           value: function() {
             return [];
           },
-          observer: 'valuelistChanged',
+          observer: 'xvaluelistChanged',
           schema: {
             items: {
               type: "object",
@@ -101,7 +92,7 @@
       hideLabelChanged: function(newValue, oldValue) {
         this.toggleClass("hide-label", newValue, this.$.labelContainer);
       },
-      valuelistChanged: function(newValue, oldValue) {
+      xvaluelistChanged: function(newValue, oldValue) {
         var self = this;
 
         // clear previous html
@@ -126,7 +117,7 @@
         this.disabledChanged(this.disabled, this.disabled);
       },
       xvaluelistSpliceChanged: function (splices) {
-        this.valuelistChanged(this.xvaluelist, undefined);
+        this.xvaluelistChanged(this.xvaluelist, undefined);
       },
       valueChanged: function(newValue, oldValue) {
         if (this._isString(newValue)) {
