@@ -106,10 +106,14 @@
           Polymer.dom(self.$.insertPoint).appendChild(fieldHtml);
         });
 
-        var input = Polymer.dom(self.$.insertPoint).querySelector('input');
-        if (input !== undefined) {
-          Polymer.dom(input).setAttribute('checked', 'checked');
-          this.value = newValue[0].value;
+        if (this.value === '') {
+          var input = Polymer.dom(self.$.insertPoint).querySelector('input');
+          if (input !== undefined) {
+            Polymer.dom(input).setAttribute('checked', 'checked');
+            this.value = newValue[0].value;
+          }
+        } else {
+          this.valueChanged(this.value, undefined);
         }
 
         this._attachEvents();
