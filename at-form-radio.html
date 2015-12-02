@@ -2,19 +2,21 @@
 
 <dom-module id="at-form-radio">
   <style media="screen">
-    .hide-label {
+    .hidden {
       display: none;
     }
   </style>
   <template>
     <at-core-theme></at-core-theme>
-    <div class="ui form">
-      <div id="labelContainer" class="field">
-        <label id="label">{{label}}</label>
+    <div id="atFormRadioWrapper">
+      <div class="ui form">
+        <div id="labelContainer" class="field">
+          <label id="label">{{label}}</label>
+        </div>
       </div>
-    </div>
-    <div class="ui form">
-      <div class="grouped fields" id="insertPoint">
+      <div class="ui form">
+        <div class="grouped fields" id="insertPoint">
+        </div>
       </div>
     </div>
   </template>
@@ -75,6 +77,17 @@
           type: Boolean,
           value: false,
           observer: 'disabledChanged'
+        },
+        /**
+         * Hides the element. When hidden nothing is displayed for the element
+         * @property hide
+         * @type Boolean
+         * @default false
+         */
+        hide: {
+          type: Boolean,
+          value: false,
+          observer: 'hideChanged'
         }
       },
       observers: [
@@ -89,8 +102,12 @@
       ready: function() {
         this._attachEvents();
       },
+      hideChanged: function (newValue, oldValue) {
+        var wrapper = this.$.atFormRadioWrapper;
+        this.toggleClass('hidden', newValue, wrapper);
+      },
       hideLabelChanged: function(newValue, oldValue) {
-        this.toggleClass("hide-label", newValue, this.$.labelContainer);
+        this.toggleClass("hidden", newValue, this.$.labelContainer);
       },
       xvaluelistChanged: function(newValue, oldValue) {
         var self = this;
@@ -120,7 +137,7 @@
 
         this.disabledChanged(this.disabled, this.disabled);
       },
-      xvaluelistSpliceChanged: function (splices) {
+      xvaluelistSpliceChanged: function(splices) {
         this.xvaluelistChanged(this.xvaluelist, undefined);
       },
       valueChanged: function(newValue, oldValue) {
