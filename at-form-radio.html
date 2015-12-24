@@ -5,18 +5,31 @@
     .hidden {
       display: none;
     }
+
+    --error-color: #e41e2b;
+    .label-container > label {
+      font-weight: bold;
+    }
+
+    .label-container.error > label {
+      color: var(--error-color);
+    }
+
+    .hint-container.error > p {
+      color: var(--error-color);
+    }
   </style>
   <template>
     <at-core-theme></at-core-theme>
     <div id="atFormRadioWrapper">
-      <div class="ui form">
-        <div id="labelContainer" class="field">
-          <label id="label">{{label}}</label>
-        </div>
+      <div id="labelContainer" class="label-container">
+        <label id="label">{{label}}</label>
       </div>
       <div class="ui form">
-        <div class="grouped fields" id="insertPoint">
-        </div>
+        <div class="grouped fields" id="insertPoint"></div>
+      </div>
+      <div id="hintContainer" class="hint-container">
+        <p id="errorHtml" class="hint"></p>
       </div>
     </div>
   </template>
@@ -24,6 +37,7 @@
   <script>
     Polymer({
       is: 'at-form-radio',
+      behaviors: [AtFormBehaviors.AtFormBehaviorsValidation],
       properties: {
         label: {
           type: String,
@@ -71,7 +85,8 @@
         },
         required: {
           type: Boolean,
-          value: false
+          value: false,
+          observer: 'requiredChanged'
         },
         disabled: {
           type: Boolean,
@@ -101,10 +116,14 @@
       _scopeCssViaAttr: true,
       ready: function() {
         this._attachEvents();
+        this._isReady = true;
       },
-      hideChanged: function (newValue, oldValue) {
+      hideChanged: function(newValue, oldValue) {
         var wrapper = this.$.atFormRadioWrapper;
         this.toggleClass('hidden', newValue, wrapper);
+        if (this._isReady) {
+          this.validate();
+        }
       },
       hideLabelChanged: function(newValue, oldValue) {
         this.toggleClass("hidden", newValue, this.$.labelContainer);
@@ -141,6 +160,9 @@
         this.xvaluelistChanged(this.xvaluelist, undefined);
       },
       valueChanged: function(newValue, oldValue) {
+        if (!this._isReady) {
+          return;
+        }
         if (this._isString(newValue)) {
           this._clearChecked();
           // new value is string; use it as value to find the input
@@ -148,7 +170,17 @@
           var input = Polymer.dom(this.$.insertPoint).querySelector(selector);
           if (input) {
             Polymer.dom(input).setAttribute('checked', 'checked');
+          } else {
+            console.log("Value " + newValue + " is invalid. Keeping old value " + oldValue);
+            this.value = oldValue;
+            this.fire('value-changed', {
+              value: this.value
+            });
           }
+        }
+
+        if (this._isReady) {
+          this.validate();
         }
       },
       disabledChanged: function(newValue, oldValue) {
@@ -161,6 +193,23 @@
           item = inputs[i];
           this.toggleAttribute('disabled', newValue, item);
         }
+
+        if (this._isReady) {
+          this.validate();
+        }
+      },
+      requiredChanged: function(newValue, oldValue) {
+        if (this._isReady) {
+          this.validate();
+        }
+      },
+      _updateUIValidState: function(isValid) {
+        var errorHtml = this.$.hintContainer;
+        this.toggleClass('error', !isValid, errorHtml);
+        var labelContainer = this.$.labelContainer;
+        this.toggleClass('error', !isValid, labelContainer);
+        var insertPoint = this.$.insertPoint;
+        this.toggleClass('error', !isValid, insertPoint);
       },
       _clearChecked: function() {
         var
