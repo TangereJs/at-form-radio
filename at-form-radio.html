@@ -142,14 +142,25 @@
           Polymer.dom(self.$.insertPoint).appendChild(fieldHtml);
         });
 
-        if (this.value === '') {
-          var input = Polymer.dom(self.$.insertPoint).querySelector('input');
-          if (input !== undefined) {
-            Polymer.dom(input).setAttribute('checked', 'checked');
+        if (newValue.length > 0) {
+          if (this.value === '') {
+            var input = Polymer.dom(self.$.insertPoint).querySelector('input');
+            if (input !== undefined) {
+              Polymer.dom(input).setAttribute('checked', 'checked');
+            }
             this.value = newValue[0].value;
+            this.valueChanged(newValue[0].value, undefined);
+          } else {
+            var inputValue = this.value;
+            var selector = "input[value='" + inputValue + "']";
+            var input = Polymer.dom(this.$.insertPoint).querySelector(selector);
+            if (input) {
+              Polymer.dom(input).setAttribute('checked', 'checked');
+            } else {
+              this.value = newValue[0].value;
+              this.valueChanged(this.value, undefined);
+            }
           }
-        } else {
-          this.valueChanged(this.value, undefined);
         }
 
         this._attachEvents();
@@ -157,7 +168,7 @@
         this.disabledChanged(this.disabled, this.disabled);
       },
       xvaluelistSpliceChanged: function(splices) {
-        this.xvaluelistChanged(this.xvaluelist, undefined);
+        // this.xvaluelistChanged(this.xvaluelist, undefined);
       },
       valueChanged: function(newValue, oldValue) {
         if (!this._isReady) {
@@ -173,10 +184,10 @@
           } else {
             console.log("Value " + newValue + " is invalid. Keeping old value " + oldValue);
             this.value = oldValue;
-            this.fire('value-changed', {
-              value: this.value
-            });
           }
+          this.fire('value-changed', {
+            value: this.value
+          });
         }
 
         if (this._isReady) {
