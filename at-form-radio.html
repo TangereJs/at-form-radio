@@ -1,12 +1,16 @@
 <link rel="import" href="../at-core-theme/at-core-theme.html">
+<link rel="import" href="../at-form-behaviors/at-form-behaviors-validation.html">
 
 <dom-module id="at-form-radio">
   <style media="screen">
+    :host {
+      --error-color: #e41e2b;
+    }
+
     .hidden {
       display: none;
     }
 
-    --error-color: #e41e2b;
     .label-container > label {
       font-weight: bold;
     }
@@ -105,9 +109,6 @@
           observer: 'hideChanged'
         }
       },
-      observers: [
-        'xvaluelistSpliceChanged(xvaluelist.splices)'
-      ],
       $meta: [{
         title: "Radio",
         type: "string",
@@ -116,7 +117,28 @@
       _scopeCssViaAttr: true,
       ready: function() {
         this._attachEvents();
+        var boundValidateIsValueInXValueList = this._validateIsValueInXValueList.bind(this);
+        this._validationFunctions.push(boundValidateIsValueInXValueList);
         this._isReady = true;
+      },
+      _validateIsValueInXValueList: function() {
+        var valueList = this.xvaluelist;
+        var value = this.value;
+        var result = false;
+
+        if (valueList.length < 1) {
+          return true;
+        }
+
+        valueList.forEach(function(item, index) {
+          result = result || item.value === value;
+        });
+
+        if (!result) {
+          this._errorMessage = 'Value ' + value + ' is invalid.';
+        }
+
+        return result;
       },
       hideChanged: function(newValue, oldValue) {
         var wrapper = this.$.atFormRadioWrapper;
@@ -136,6 +158,10 @@
 
         // newValue can be CSV or array; detection needed and normlization to array
         newValue = this._convertToArray(newValue);
+        if (this._isString(this.xvaluelist)) {
+          this.xvaluelist = newValue;
+          return;
+        }
 
         newValue.forEach(function(element, index, array) {
           var fieldHtml = self._constructRadioField(element);
@@ -156,9 +182,6 @@
             var input = Polymer.dom(this.$.insertPoint).querySelector(selector);
             if (input) {
               Polymer.dom(input).setAttribute('checked', 'checked');
-            } else {
-              this.value = newValue[0].value;
-              this.valueChanged(this.value, undefined);
             }
           }
         }
@@ -166,9 +189,6 @@
         this._attachEvents();
 
         this.disabledChanged(this.disabled, this.disabled);
-      },
-      xvaluelistSpliceChanged: function(splices) {
-        // this.xvaluelistChanged(this.xvaluelist, undefined);
       },
       valueChanged: function(newValue, oldValue) {
         if (!this._isReady) {
@@ -181,9 +201,6 @@
           var input = Polymer.dom(this.$.insertPoint).querySelector(selector);
           if (input) {
             Polymer.dom(input).setAttribute('checked', 'checked');
-          } else {
-            console.log("Value " + newValue + " is invalid. Keeping old value " + oldValue);
-            this.value = oldValue;
           }
           this.fire('value-changed', {
             value: this.value
