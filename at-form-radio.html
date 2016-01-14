@@ -121,12 +121,14 @@
         this._validationFunctions.push(boundValidateIsValueInXValueList);
         this._isReady = true;
       },
-      _validateIsValueInXValueList: function() {
+      _validateIsValueInXValueList: function(value) {
         var valueList = this.xvaluelist;
-        var value = this.value;
         var result = false;
 
         if (valueList.length < 1) {
+          return true;
+        }
+        if (value === '') {
           return true;
         }
 
