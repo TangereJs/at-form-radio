@@ -171,20 +171,12 @@
         });
 
         if (newValue.length > 0) {
-          // if (this.value === '') {
-          //   var input = Polymer.dom(self.$.insertPoint).querySelector('input');
-          //   if (input !== undefined) {
-          //     Polymer.dom(input).setAttribute('checked', 'checked');
-          //   }
-          //   this.value = newValue[0].value;
-          //   this.valueChanged(newValue[0].value, undefined);
-          // } else {
           var inputValue = this.value;
           if (inputValue !== "") {
             var selector = "input[value='" + inputValue + "']";
             var input = Polymer.dom(this.$.insertPoint).querySelector(selector);
             if (input) {
-              Polymer.dom(input).setAttribute('checked', 'checked');
+              input.checked = true;
             }
           }
         }
@@ -203,7 +195,7 @@
           var selector = "input[value='" + newValue + "']";
           var input = Polymer.dom(this.$.insertPoint).querySelector(selector);
           if (input) {
-            Polymer.dom(input).setAttribute('checked', 'checked');
+            input.checked = true;
           }
           this.fire('value-changed', {
             value: this.value
@@ -250,7 +242,7 @@
 
         for (index = 0; index < len; index += 1) {
           selectedInput = selectedInputs[index];
-          Polymer.dom(selectedInput).removeAttribute('checked');
+          selectedInput.checked = false;
         }
       },
       _attachEvents: function() {
@@ -270,7 +262,7 @@
               self._clearChecked();
               var currentTarget = event.currentTarget;
               var input = currentTarget.querySelector('input');
-              Polymer.dom(input).setAttribute('checked', '');
+              input.checked = true;
 
               self.value = input.value;
               self.fire('value-changed', {
