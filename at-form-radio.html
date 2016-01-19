@@ -243,15 +243,14 @@
         this.toggleClass('error', !isValid, insertPoint);
       },
       _clearChecked: function() {
-        var
-          selectedInputs = Polymer.dom(this.root).querySelectorAll('input[checked]'),
-          len = selectedInputs.length,
-          index,
-          selectedInput;
+        var selectedInputs = Polymer.dom(this.root).querySelectorAll('input[checked]');
+        var len = selectedInputs.length;
+        var index;
+        var selectedInput;
 
         for (index = 0; index < len; index += 1) {
           selectedInput = selectedInputs[index];
-          selectedInput.removeAttribute('checked');
+          Polymer.dom(selectedInput).removeAttribute('checked');
         }
       },
       _attachEvents: function() {
@@ -271,7 +270,7 @@
               self._clearChecked();
               var currentTarget = event.currentTarget;
               var input = currentTarget.querySelector('input');
-              input.setAttribute('checked', 'checked');
+              Polymer.dom(input).setAttribute('checked', '');
 
               self.value = input.value;
               self.fire('value-changed', {
@@ -292,11 +291,10 @@
         </div>
       */
       _constructRadioField: function(data) {
-        var
-          fieldDiv = document.createElement('div'),
-          radioDiv = document.createElement('div'),
-          inputEl = document.createElement('input'),
-          labelEl = document.createElement('label');
+        var fieldDiv = document.createElement('div');
+        var radioDiv = document.createElement('div');
+        var inputEl = document.createElement('input');
+        var labelEl = document.createElement('label');
 
         Polymer.dom(fieldDiv).classList.add('field');
         Polymer.dom(radioDiv).classList.add('ui');
