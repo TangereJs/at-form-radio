@@ -306,7 +306,8 @@
         Polymer.dom(labelEl).innerHTML = data.title;
         Polymer.dom(inputEl).setAttribute('type', 'radio');
         Polymer.dom(inputEl).setAttribute('value', data.value);
-
+        Polymer.dom(inputEl).setAttribute('tabindex', 0);
+        Polymer.dom(inputEl).setAttribute('name', this.is);
         Polymer.dom(inputEl).setAttribute('data-title', data.title);
 
         Polymer.dom(radioDiv).appendChild(inputEl);
