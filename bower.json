@@ -4,6 +4,8 @@
   "dependencies": {
     "polymer": "Polymer/polymer#0.8-preview",
     "at-core-theme": "TangereJs/at-core-theme#0.8-preview",
-    "at-form-behaviors": "TangereJs/at-form-behaviors#0.8-preview"
+    "at-form-behaviors": "TangereJs/at-form-behaviors#0.8-preview",
+    "paper-radio-group": "PolymerElements/paper-radio-group#master",
+    "paper-radio-button": "PolymerElements/paper-radio-button#master"
   }
 }

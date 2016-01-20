@@ -1,8 +1,10 @@
 <link rel="import" href="../at-core-theme/at-core-theme.html">
 <link rel="import" href="../at-form-behaviors/at-form-behaviors-validation.html">
+<link rel="import" href="../paper-radio-group/paper-radio-group.html">
+<link rel="import" href="../paper-radio-button/paper-radio-button.html">
 
 <dom-module id="at-form-radio">
-  <style media="screen">
+  <style is="custom-style">
     :host {
       --error-color: #e41e2b;
     }
@@ -22,6 +24,20 @@
     .hint-container.error > p {
       color: var(--error-color);
     }
+    /* focus state */
+
+    #insertPoint {
+      display: flex;
+      flex-direction: column;
+    }
+
+    paper-radio-button.error {
+      --paper-radio-button-checked-color: var(--error-color);
+      --paper-radio-button-checked-ink-color: var(--error-color);
+      --paper-radio-button-unchecked-color: var(--error-color);
+      --paper-radio-button-unchecked-ink-color: var(--error-color);
+      --paper-radio-button-label-color: var(--error-color);
+    }
   </style>
   <template>
     <at-core-theme></at-core-theme>
@@ -30,7 +46,7 @@
         <label id="label">{{label}}</label>
       </div>
       <div class="ui form">
-        <div class="grouped fields" id="insertPoint"></div>
+        <paper-radio-group class="grouped fields" id="insertPoint"></paper-radio-group>
       </div>
       <div id="hintContainer" class="hint-container">
         <p id="errorHtml" class="hint"></p>
@@ -42,6 +58,9 @@
     Polymer({
       is: 'at-form-radio',
       behaviors: [AtFormBehaviors.AtFormBehaviorsValidation],
+      hostAttributes: {
+        tabindex: 0
+      },
       properties: {
         label: {
           type: String,
@@ -116,9 +135,17 @@
       }],
       _scopeCssViaAttr: true,
       ready: function() {
-        this._attachEvents();
+        this._isReady = false;
+
+        var self = this;
+        var radioGroup = this.$.insertPoint;
+        radioGroup.addEventListener('iron-select', function(event) {
+          var newValue = event.detail.item.name;
+          self.value = newValue;
+        });
         var boundValidateIsValueInXValueList = this._validateIsValueInXValueList.bind(this);
         this._validationFunctions.push(boundValidateIsValueInXValueList);
+
         this._isReady = true;
       },
       _validateIsValueInXValueList: function(value) {
@@ -173,15 +200,10 @@
         if (newValue.length > 0) {
           var inputValue = this.value;
           if (inputValue !== "") {
-            var selector = "input[value='" + inputValue + "']";
-            var input = Polymer.dom(this.$.insertPoint).querySelector(selector);
-            if (input) {
-              input.checked = true;
-            }
+            var radioGroup = this.$.insertPoint;
+            radioGroup.select(inputValue);
           }
         }
-
-        this._attachEvents();
 
         this.disabledChanged(this.disabled, this.disabled);
       },
@@ -190,13 +212,9 @@
           return;
         }
         if (this._isString(newValue)) {
-          this._clearChecked();
-          // new value is string; use it as value to find the input
-          var selector = "input[value='" + newValue + "']";
-          var input = Polymer.dom(this.$.insertPoint).querySelector(selector);
-          if (input) {
-            input.checked = true;
-          }
+          var radioGroup = this.$.insertPoint;
+          radioGroup.select(newValue);
+
           this.fire('value-changed', {
             value: this.value
           });
@@ -207,10 +225,9 @@
         }
       },
       disabledChanged: function(newValue, oldValue) {
-        var
-          inputs = Polymer.dom(this.$.insertPoint).querySelectorAll('input'),
-          len = inputs ? inputs.length : 0,
-          i, item;
+        var inputs = Polymer.dom(this.$.insertPoint).querySelectorAll('paper-radio-button');
+        var len = inputs ? inputs.length : 0;
+        var i, item;
 
         for (var i = 0; i < len; i++) {
           item = inputs[i];
@@ -232,47 +249,15 @@
         var labelContainer = this.$.labelContainer;
         this.toggleClass('error', !isValid, labelContainer);
         var insertPoint = this.$.insertPoint;
-        this.toggleClass('error', !isValid, insertPoint);
+        var allRadioButtons = Polymer.dom(insertPoint).querySelectorAll('paper-radio-button');
+        var self = this;
+        allRadioButtons.forEach(function(radioButton, index) {
+          self.toggleClass('error', !isValid, radioButton);
+        });
+        // see https://www.polymer-project.org/1.0/docs/devguide/styling.html#style-api to understand why updateStyles() call is here
+        this.updateStyles();
       },
-      _clearChecked: function() {
-        var selectedInputs = Polymer.dom(this.root).querySelectorAll('input[checked]');
-        var len = selectedInputs.length;
-        var index;
-        var selectedInput;
 
-        for (index = 0; index < len; index += 1) {
-          selectedInput = selectedInputs[index];
-          selectedInput.checked = false;
-        }
-      },
-      _attachEvents: function() {
-        var
-          radioBoxes = Polymer.dom(this.root).querySelectorAll('.ui .checkbox'),
-          len = radioBoxes.length,
-          index,
-          radioBox,
-          self = this;
-
-        for (index = 0; index < len; index += 1) {
-          radioBox = radioBoxes[index];
-
-          radioBox.addEventListener('click', function(event) {
-            event.stopPropagation();
-            if (!self.disabled) {
-              self._clearChecked();
-              var currentTarget = event.currentTarget;
-              var input = currentTarget.querySelector('input');
-              input.checked = true;
-
-              self.value = input.value;
-              self.fire('value-changed', {
-                value: self.value
-              });
-
-            }
-          });
-        }
-      },
       /*
         function _constructRadioField creates this div
         <div class="field">
@@ -283,28 +268,12 @@
         </div>
       */
       _constructRadioField: function(data) {
-        var fieldDiv = document.createElement('div');
-        var radioDiv = document.createElement('div');
-        var inputEl = document.createElement('input');
-        var labelEl = document.createElement('label');
+        var inputEl = document.createElement('paper-radio-button');
 
-        Polymer.dom(fieldDiv).classList.add('field');
-        Polymer.dom(radioDiv).classList.add('ui');
-        Polymer.dom(radioDiv).classList.add('radio');
-        Polymer.dom(radioDiv).classList.add('checkbox');
+        Polymer.dom(inputEl).innerHTML = data.title;
+        Polymer.dom(inputEl).setAttribute('name', data.value);
 
-        Polymer.dom(labelEl).innerHTML = data.title;
-        Polymer.dom(inputEl).setAttribute('type', 'radio');
-        Polymer.dom(inputEl).setAttribute('value', data.value);
-        Polymer.dom(inputEl).setAttribute('tabindex', 0);
-        Polymer.dom(inputEl).setAttribute('name', this.is);
-        Polymer.dom(inputEl).setAttribute('data-title', data.title);
-
-        Polymer.dom(radioDiv).appendChild(inputEl);
-        Polymer.dom(radioDiv).appendChild(labelEl);
-        Polymer.dom(fieldDiv).appendChild(radioDiv);
-
-        return fieldDiv;
+        return inputEl;
       },
       _convertToArray: function(object) {
         var result = [];
