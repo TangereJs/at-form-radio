@@ -58,9 +58,6 @@
     Polymer({
       is: 'at-form-radio',
       behaviors: [AtFormBehaviors.AtFormBehaviorsValidation],
-      hostAttributes: {
-        tabindex: 0
-      },
       properties: {
         label: {
           type: String,
@@ -147,6 +144,10 @@
         this._validationFunctions.push(boundValidateIsValueInXValueList);
 
         this._isReady = true;
+      },
+      focus: function () {
+        var paperRadioGroup = this.$.insertPoint;
+        paperRadioGroup.focus();
       },
       _validateIsValueInXValueList: function(value) {
         var valueList = this.xvaluelist;
