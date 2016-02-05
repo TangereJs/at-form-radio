@@ -1,55 +1,69 @@
-<link rel="import" href="../at-core-theme/at-core-theme.html">
+<link rel="import" href="../at-theme/at-theme.html">
 <link rel="import" href="../at-form-behaviors/at-form-behaviors-validation.html">
 <link rel="import" href="../paper-radio-group/paper-radio-group.html">
 <link rel="import" href="../paper-radio-button/paper-radio-button.html">
 
 <dom-module id="at-form-radio">
-  <style is="custom-style">
+  <style>
+    :host * {
+      box-sizing: border-box;
+    }
+
     :host {
-      --error-color: #e41e2b;
+      @apply(--at-form-host);
     }
 
     .hidden {
       display: none;
     }
 
-    .label-container > label {
-      font-weight: bold;
+    .error {
+      color: var(--at-error-color);
     }
 
-    .label-container.error > label {
-      color: var(--error-color);
+    .disabled {
+      @apply(--at-form-disabled);
     }
 
-    .hint-container.error > p {
-      color: var(--error-color);
+    #atContainer {
+      @apply(--at-form-element);
     }
-    /* focus state */
+
+    #label {
+      @apply(--at-form-label);
+    }
+
+    #contentContainer.error {
+      @apply(--at-form-error-margins);
+    }
+
+    #errorHtml {
+      @apply(--at-form-error-font);
+    }
+
+    paper-radio-button.error {
+      --paper-radio-button-checked-color: var(--at-error-color);
+      --paper-radio-button-checked-ink-color: var(--at-error-color);
+      --paper-radio-button-unchecked-color: var(--at-error-color);
+      --paper-radio-button-unchecked-ink-color: var(--at-error-color);
+      --paper-radio-button-label-color: var(--at-error-color);
+    }
 
     #insertPoint {
       display: flex;
       flex-direction: column;
     }
-
-    paper-radio-button.error {
-      --paper-radio-button-checked-color: var(--error-color);
-      --paper-radio-button-checked-ink-color: var(--error-color);
-      --paper-radio-button-unchecked-color: var(--error-color);
-      --paper-radio-button-unchecked-ink-color: var(--error-color);
-      --paper-radio-button-label-color: var(--error-color);
-    }
   </style>
   <template>
-    <at-core-theme></at-core-theme>
-    <div id="atFormRadioWrapper">
-      <div id="labelContainer" class="label-container">
+    <div id="atContainer">
+      <div id="labelContainer">
         <label id="label">{{label}}</label>
       </div>
-      <div class="ui form">
+      <div id="contentContainer">
         <paper-radio-group class="grouped fields" id="insertPoint"></paper-radio-group>
       </div>
-      <div id="hintContainer" class="hint-container">
-        <p id="errorHtml" class="hint"></p>
+      <div id="hintContainer">
+        <p id="errorHtml"></p>
       </div>
     </div>
   </template>
@@ -145,7 +159,7 @@
 
         this._isReady = true;
       },
-      focus: function () {
+      focus: function() {
         var paperRadioGroup = this.$.insertPoint;
         paperRadioGroup.focus();
       },
@@ -171,7 +185,7 @@
         return result;
       },
       hideChanged: function(newValue, oldValue) {
-        var wrapper = this.$.atFormRadioWrapper;
+        var wrapper = this.$.atContainer;
         this.toggleClass('hidden', newValue, wrapper);
         if (this._isReady) {
           this.validate();
