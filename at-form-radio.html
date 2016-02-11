@@ -1,56 +1,40 @@
-<link rel="import" href="../at-core-theme/at-core-theme.html">
+<link rel="import" href="../at-theme/at-theme.html">
 <link rel="import" href="../at-form-behaviors/at-form-behaviors-validation.html">
 <link rel="import" href="../paper-radio-group/paper-radio-group.html">
 <link rel="import" href="../paper-radio-button/paper-radio-button.html">
+<link rel="import" href="../iron-label/iron-label.html">
 
 <dom-module id="at-form-radio">
-  <style is="custom-style">
+  <style include="at-form-common"></style>
+  <style>
+    :host * {
+      box-sizing: border-box;
+    }
+
     :host {
-      --error-color: #e41e2b;
+      @apply(--at-form-host);
     }
 
-    .hidden {
-      display: none;
+    paper-radio-button.error {
+      --paper-radio-button-checked-color: var(--at-error-color);
+      --paper-radio-button-checked-ink-color: var(--at-error-color);
+      --paper-radio-button-unchecked-color: var(--at-error-color);
+      --paper-radio-button-unchecked-ink-color: var(--at-error-color);
+      --paper-radio-button-label-color: var(--at-error-color);
     }
-
-    .label-container > label {
-      font-weight: bold;
-    }
-
-    .label-container.error > label {
-      color: var(--error-color);
-    }
-
-    .hint-container.error > p {
-      color: var(--error-color);
-    }
-    /* focus state */
 
     #insertPoint {
       display: flex;
       flex-direction: column;
     }
-
-    paper-radio-button.error {
-      --paper-radio-button-checked-color: var(--error-color);
-      --paper-radio-button-checked-ink-color: var(--error-color);
-      --paper-radio-button-unchecked-color: var(--error-color);
-      --paper-radio-button-unchecked-ink-color: var(--error-color);
-      --paper-radio-button-label-color: var(--error-color);
-    }
   </style>
   <template>
-    <at-core-theme></at-core-theme>
-    <div id="atFormRadioWrapper">
-      <div id="labelContainer" class="label-container">
-        <label id="label">{{label}}</label>
-      </div>
-      <div class="ui form">
+    <div id="atContainer" class="at-container">
+      <iron-label id="label" for="insertPoint">{{label}}</iron-label>
+      <div id="contentContainer" class="at-content-container">
         <paper-radio-group class="grouped fields" id="insertPoint"></paper-radio-group>
       </div>
-      <div id="hintContainer" class="hint-container">
-        <div id="errorHtml" class="hint"></div>
-      </div>
+      <div id="hint"></div>
     </div>
   </template>
 
@@ -130,7 +114,6 @@
         type: "string",
         xtype: "radio"
       }],
-      _scopeCssViaAttr: true,
       ready: function() {
         this._isReady = false;
 
@@ -145,7 +128,7 @@
 
         this._isReady = true;
       },
-      focus: function () {
+      focus: function() {
         var paperRadioGroup = this.$.insertPoint;
         paperRadioGroup.focus();
       },
@@ -171,14 +154,14 @@
         return result;
       },
       hideChanged: function(newValue, oldValue) {
-        var wrapper = this.$.atFormRadioWrapper;
+        var wrapper = this.$.atContainer;
         this.toggleClass('hidden', newValue, wrapper);
         if (this._isReady) {
           this.validate();
         }
       },
       hideLabelChanged: function(newValue, oldValue) {
-        this.toggleClass("hidden", newValue, this.$.labelContainer);
+        this.toggleClass("hidden", newValue, this.$.label);
       },
       xvaluelistChanged: function(newValue, oldValue) {
         var self = this;
@@ -226,6 +209,9 @@
         }
       },
       disabledChanged: function(newValue, oldValue) {
+        var atContainer = this.$.atContainer;
+        this.toggleClass('disabled', newValue, atContainer);
+
         var inputs = Polymer.dom(this.$.insertPoint).querySelectorAll('paper-radio-button');
         var len = inputs ? inputs.length : 0;
         var i, item;
@@ -245,10 +231,10 @@
         }
       },
       _updateUIValidState: function(isValid) {
-        var errorHtml = this.$.hintContainer;
-        this.toggleClass('error', !isValid, errorHtml);
-        var labelContainer = this.$.labelContainer;
-        this.toggleClass('error', !isValid, labelContainer);
+        var hint = this.$.hint;
+        this.toggleClass('error', !isValid, hint);
+        var label = this.$.label;
+        this.toggleClass('error', !isValid, label);
         var insertPoint = this.$.insertPoint;
         var allRadioButtons = Polymer.dom(insertPoint).querySelectorAll('paper-radio-button');
         var self = this;
