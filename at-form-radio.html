@@ -231,8 +231,6 @@
         }
       },
       _updateUIValidState: function(isValid) {
-        var hint = this.$.hint;
-        this.toggleClass('error', !isValid, hint);
         var label = this.$.label;
         this.toggleClass('error', !isValid, label);
         var insertPoint = this.$.insertPoint;
@@ -244,16 +242,15 @@
         // see https://www.polymer-project.org/1.0/docs/devguide/styling.html#style-api to understand why updateStyles() call is here
         this.updateStyles();
       },
-
-      /*
-        function _constructRadioField creates this div
-        <div class="field">
-          <div class="ui radio checkbox">
-            <input type="radio">
-            <label>Once a day</label>
-          </div>
-        </div>
-      */
+      // this function is part of the hint/validation API
+      // hint should be displayed when element gains focus
+      // behavior can not know when element gained focus
+      // but if gived focusable element it can attach to its focus event
+      // it should return focusable element if available or null if focusable element doesn't exist
+      _getFocusableElement: function () {
+        var focusable = this.$.insertPoint;
+        return focusable;
+      },
       _constructRadioField: function(data) {
         var inputEl = document.createElement('paper-radio-button');
 
