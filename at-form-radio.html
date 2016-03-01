@@ -1,4 +1,5 @@
-<link rel="import" href="../at-theme/at-theme.html">
+<link rel="import" href="../tangere/Tangere.html">
+<link rel="import" href="../at-i18n/at-i18n-behavior.html">
 <link rel="import" href="../at-form-behaviors/at-form-behaviors-validation.html">
 <link rel="import" href="../paper-radio-group/paper-radio-group.html">
 <link rel="import" href="../paper-radio-button/paper-radio-button.html">
@@ -27,7 +28,7 @@
       display: flex;
       flex-direction: column;
     }
-              
+
     #hint {
       min-height: 14px;
       margin-bottom: 8px;
@@ -47,7 +48,7 @@
   <script>
     Polymer({
       is: 'at-form-radio',
-      behaviors: [AtFormBehaviors.AtFormBehaviorsValidation],
+      behaviors: [ Tangere.behaviors.formValidation, Tangere.behaviors.i18n ],
       properties: {
         label: {
           type: String,
