@@ -52,7 +52,8 @@
       properties: {
         label: {
           type: String,
-          value: 'at-form-radio'
+          value: 'at-form-radio',
+          title: 'Label'
         },
         hideLabel: {
           type: Boolean,
@@ -87,22 +88,26 @@
               }
             }
           },
-          layout: 'horizontal'
+          layout: 'horizontal',
+          title: 'Value List'
         },
         value: {
           type: String,
           value: '',
-          observer: 'valueChanged'
+          observer: 'valueChanged',
+          title: 'Value'
         },
         required: {
           type: Boolean,
           value: false,
-          observer: 'requiredChanged'
+          observer: 'requiredChanged',
+          title: 'Input requred'
         },
         disabled: {
           type: Boolean,
           value: false,
-          observer: 'disabledChanged'
+          observer: 'disabledChanged',
+          title: 'Field value can not be changed'
         },
         /**
          * Hides the element. When hidden nothing is displayed for the element
@@ -113,7 +118,8 @@
         hide: {
           type: Boolean,
           value: false,
-          observer: 'hideChanged'
+          observer: 'hideChanged',
+          title: 'Field is invisible'
         }
       },
       $meta: [{
