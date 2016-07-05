@@ -7,36 +7,35 @@
 <link rel="import" href="../at-theme/at-theme.html">
 
 <dom-module id="at-form-radio">
-  <style include="at-form-common"></style>
-  <style>
-    :host * {
-      box-sizing: border-box;
-    }
-
-    :host {
-      @apply(--at-form-host);
-    }
-
-    paper-radio-button.error {
-      --paper-radio-button-checked-color: var(--at-error-color);
-      --paper-radio-button-checked-ink-color: var(--at-error-color);
-      --paper-radio-button-unchecked-color: var(--at-error-color);
-      --paper-radio-button-unchecked-ink-color: var(--at-error-color);
-      --paper-radio-button-label-color: var(--at-error-color);
-    }
-
-    #insertPoint {
-      display: flex;
-      flex-direction: column;
-    }
-
-    #hint {
-      min-height: 14px;
-      margin-bottom: 8px;
-    }
-
-  </style>
   <template>
+    <style include="at-form-common"></style>
+    <style>
+      :host * {
+        box-sizing: border-box;
+      }
+
+      :host {
+        @apply(--at-form-host);
+      }
+
+      paper-radio-button.error {
+        --paper-radio-button-checked-color: var(--at-error-color);
+        --paper-radio-button-checked-ink-color: var(--at-error-color);
+        --paper-radio-button-unchecked-color: var(--at-error-color);
+        --paper-radio-button-unchecked-ink-color: var(--at-error-color);
+        --paper-radio-button-label-color: var(--at-error-color);
+      }
+
+      #insertPoint {
+        display: flex;
+        flex-direction: column;
+      }
+
+      #hint {
+        min-height: 14px;
+        margin-bottom: 8px;
+      }
+    </style>
     <div id="atContainer" class="at-container">
       <iron-label id="label" for="insertPoint">{{label}}</iron-label>
       <div id="contentContainer" class="at-content-container">
@@ -49,7 +48,7 @@
   <script>
     Polymer({
       is: 'at-form-radio',
-      behaviors: [ Tangere.behaviors.formValidation, Tangere.behaviors.i18n ],
+      behaviors: [Tangere.behaviors.formValidation, Tangere.behaviors.i18n],
       properties: {
         label: {
           type: String,
@@ -262,7 +261,7 @@
       // behavior can not know when element gained focus
       // but if gived focusable element it can attach to its focus event
       // it should return focusable element if available or null if focusable element doesn't exist
-      _getFocusableElement: function () {
+      _getFocusableElement: function() {
         var focusable = this.$.insertPoint;
         return focusable;
       },
