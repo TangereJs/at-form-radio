@@ -121,9 +121,9 @@
 
       /*
         4. check element specific constraints
-        for at-form-radio check number format
+        for at-form-radio check if value is in xvaluelist
       */
-      validationResult = _validateNumberFormat(value, localizer);
+      validationResult = _validateIsValueInXValueList(value, schema.xvaluelist, localizer);
 
       return validationResult;
 
@@ -158,7 +158,10 @@
         override in at-form-file and at-from-image as is already implemented (see at-form-file Line 356 and at-form-image Line 450)
       */
       function _validateRequired(required, value, localizer) {
-        var validationResult = {};
+        var validationResult = {
+          isValid: true,
+          errorMessage: ""
+        };
         var required_ = Boolean(required);
 
         // if required is true return true if value is not undefined, null or ""
@@ -170,25 +173,23 @@
         return validationResult;
       }
 
-      function _validateNumberFormat(value, localizer) {
+      function _validateIsValueInXValueList(value, xvaluelist, localizer) {
         var validationResult = {
           isValid: true,
           errorMessage: ""
         };
 
-        if ([null, "null", ""].indexOf(value) !== -1) {
+        if (xvaluelist.length < 1 || [null, "null", ""].indexOf(value) !== -1) {
           return validationResult;
         }
 
-        var numberFormatRegex = /^(?:\d*\.\d*|\d+)$/;
+        validationResult.isValid = false;
+        xvaluelist.forEach(function(item, index) {
+          validationResult.isValid = validationResult.isValid || item.value === value;
+        });
 
-        try {
-          validationResult.isValid = numberFormatRegex.test(value);
-          if(!validationResult.isValid) {
-            validationResult.errorMessage = localizer("Value {0} is not in a correct format", value);
-          }
-        } catch (e) {
-          console.log(e);
+        if (!validationResult.isValid) {
+          validationResult.errorMessage = localizer('Value {0} is invalid.', value);
         }
 
         return validationResult;
