@@ -23,6 +23,10 @@
         return Object.prototype.toString.call(obj) === "[object Boolean]";
       }
 
+      function isArray(obj) {
+        return Object.prototype.toString.call(obj) === "[object Array]";
+      }
+
       function isNumber(obj) {
         return Object.prototype.toString.call(obj) === "[object Number]";
       }
@@ -69,35 +73,42 @@
       // @isHTMLUnknownElement(schema) thank you IE11 and Safari for not supporting custom elements. Thank you very much ...
       validationResult.isValid = isObject(schema) || ((isHTMLUnknownElement(schema) || isHTMLElement(schema)) && schema.is === "at-form-radio");
       if (!validationResult.isValid) {
-        validationResult.errorMessage = localizer("schema is not an object.")
+        validationResult.errorMessage = localizer("schema is not an object or at-form-radio.");
         return validationResult;
       }
 
       //schema must have properties object
       validationResult.isValid = isObject(schema.properties);
       if (!validationResult.isValid) {
-        validationResult.errorMessage = localizer("schema.properties is not an object.")
+        validationResult.errorMessage = localizer("schema.properties is not an object.");
         return validationResult;
       }
 
       //schema.properties must have value property and value property must be an object
       validationResult.isValid = isObject(schema.properties.value);
       if (!validationResult.isValid) {
-        validationResult.errorMessage = localizer("schema.properties.value is not an object.")
+        validationResult.errorMessage = localizer("schema.properties.value is not an object.");
         return validationResult;
       }
 
       //schema.properties.value must have type property and type property must be a function
       validationResult.isValid = isFunction(schema.properties.value.type);
       if (!validationResult.isValid) {
-        validationResult.errorMessage = localizer("schema.properties.value.type is not a function.")
+        validationResult.errorMessage = localizer("schema.properties.value.type is not a function.");
         return validationResult;
       }
 
       // schema must have required property and required must be boolean
       validationResult.isValid = isBoolean(schema.required);
       if (!validationResult.isValid) {
-        validationResult.errorMessage = localizer("schema.required is not a boolean value.")
+        validationResult.errorMessage = localizer("schema.required is not a boolean value.");
+        return validationResult;
+      }
+
+      // schema must have xvaluelist property and xvaluelist must be array
+      validationResult.isValid = isArray(schema.xvaluelist);
+      if (!validationResult.isValid) {
+        validationResult.errorMessage = localizer("schema.xvaluelist is not an array.");
         return validationResult;
       }
 

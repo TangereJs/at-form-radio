@@ -20,21 +20,15 @@
 
 <body>
 
-  <test-fixture id="attrStartDate">
+  <test-fixture id="attrXvaluelist">
     <template>
-      <at-form-radio start-date="2016-08-15"></at-form-radio>
+      <at-form-radio xvaluelist='[{ "title":"t1", "value": "v1" },{ "title":"t2", "value": "v2" },{ "title":"t3", "value": "v3" }]'></at-form-radio>
     </template>
   </test-fixture>
 
-  <test-fixture id="attrEndDate">
+  <test-fixture id="attrXvaluelistValue">
     <template>
-      <at-form-radio end-date="2016-08-25"></at-form-radio>
-    </template>
-  </test-fixture>
-
-  <test-fixture id="attrStartDateEndDate">
-    <template>
-      <at-form-radio start-date="2016-08-15" end-date="2016-08-25"></at-form-radio>
+      <at-form-radio xvaluelist='[{ "title":"t1", "value": "v1" },{ "title":"t2", "value": "v2" },{ "title":"t3", "value": "v3" }]' value="v1"></at-form-radio>
     </template>
   </test-fixture>
 
@@ -46,260 +40,223 @@
 
   <script>
     suite('events tests', function() {
+
+      function isArray(obj) {
+        return Object.prototype.toString.call(obj) === "[object Array]";
+      }
+
+      function isObject(obj) {
+        return Object.prototype.toString.call(obj) === "[object Object]";
+      }
+
+      function isFunction(obj) {
+        return Object.prototype.toString.call(obj) === "[object Function]";
+      }
+
+      function areEqual(obj1, obj2) {
+        var result = false;
+        var obj1PropertyValue;
+        var obj2PropertyValue;
+
+        if (isArray(obj1) && isArray(obj2)) {
+          result = obj1.length === obj2.length;
+          // if lengths are different return false
+          if (!result) {
+            return result;
+          }
+
+          // else compare items in the arrays for equality
+          for (var i = 0; i < obj1.length && result; i++) {
+            obj1PropertyValue = obj1[i];
+            obj2PropertyValue = obj2[i];
+            result = areEqual(obj1PropertyValue, obj2PropertyValue);
+          }
+        } else if (isObject(obj1) && isObject(obj2)) {
+          var obj1Properties = Object.keys(obj1);
+          var obj2Properties = Object.keys(obj2);
+          // tests that these arrays have same lengths and same names
+          result = areEqual(obj1Properties, obj2Properties);
+
+          if (!result) {
+            return result;
+          }
+          // test that every property in both objects has same value
+          for (var j = 0; j < obj1Properties.length && result; j++) {
+            var obj1PropertyName = obj1Properties[j];
+            var obj2PropertyName = obj2Properties[j];
+            obj1PropertyValue = obj1[obj1PropertyName];
+            obj2PropertyValue = obj2[obj2PropertyName];
+            result = areEqual(obj1PropertyValue, obj2PropertyValue);
+          }
+        } else if (isFunction(obj1) && isFunction(obj2)) {
+          result = obj1.toString() === obj2.toString();
+        } else {
+          // this tests string, number, boolean, null and undefined
+          result = obj1 === obj2;
+        }
+
+        return result;
+      }
+
+      var initialXvalueList = [{
+        title: "t1",
+        value: "v1"
+      }, {
+        title: "t2",
+        value: "v2"
+      }, {
+        title: "t3",
+        value: "v3"
+      }];
+
       suite('tests were property values are set as attributes ', function() {
 
-        test('start date set as attribute, setting end date triggers value-changed event', function(done) {
-          var input = fixture('attrStartDate');
-          assert.equal(input.startDate, "2016-08-15", "initial start date not set correctly");
-          assert.equal(input.endDate, "", "initial end date not set correctly");
-          assert.equal(input.value, '2016-08-15 to ', 'initial value not set correctly');
+        test('xvaluelist set as attribute, setting value triggers value-changed event', function(done) {
+          var input = fixture('attrXvaluelist');
 
-          var expectedValue = "";
-          var eventCount = 0;
-          input.addEventListener('value-changed', function(event) {
-            assert.equal(event.detail.value, expectedValue, 'event detail value not set correctly');
-            assert.equal(input.value, expectedValue, 'element value not set correctly');
-            eventCount += 1;
-
-          });
-          expectedValue = "2016-08-15 to ";
-          Polymer.dom(input).setAttribute('start-date', '2016-08-15');
-          Polymer.dom(input).setAttribute('start-date', '2016-08-15');
-          expectedValue = "2016-08-30 to ";
-          Polymer.dom(input).setAttribute('start-date', '2016-08-30');
-          Polymer.dom(input).setAttribute('start-date', '2016-08-30');
-          expectedValue = "2016-08-15 to ";
-          Polymer.dom(input).setAttribute('start-date', '2016-08-15');
-          Polymer.dom(input).setAttribute('start-date', '2016-08-15');
-          expectedValue = "2016-08-15 to 2016-08-30";
-          Polymer.dom(input).setAttribute('end-date', '2016-08-30');
-          Polymer.dom(input).setAttribute('end-date', '2016-08-30');
-
-          var inputField = input.$.triggerRange;
-          assert.equal("8/15/2016 to 8/30/2016", inputField.value, "display value is not correct");
+          assert.equal(true, areEqual(input.xvaluelist, initialXvalueList), "xvaluelist not set correctly");
+          assert.equal(input.value, '', 'initial value not set correctly');
 
           flush(function() {
-            assert.equal(3, eventCount, "at-form-radio didn't fire correct number of events");
-            done();
-          });
-        });
-
-        test('end date set as attribute, setting start date triggers value-changed event', function(done) {
-          var input = fixture('attrEndDate');
-          assert.equal(input.startDate, "", "initial start date not set correctly");
-          assert.equal(input.endDate, "2016-08-25", "initial end date not set correctly");
-          assert.equal(input.value, ' to 2016-08-25', 'initial value not set correctly');
-
-          var expectedValue = "";
-          var eventCount = 0;
-          input.addEventListener('value-changed', function(event) {
-            assert.equal(event.detail.value, expectedValue, 'event detail value not set correctly');
-            assert.equal(input.value, expectedValue, 'element value not set correctly');
-            eventCount += 1;
-
-          });
-
-          expectedValue = " to 2016-08-25";
-          Polymer.dom(input).setAttribute('end-date', '2016-08-25');
-          Polymer.dom(input).setAttribute('end-date', '2016-08-25');
-          expectedValue = " to 2016-08-30";
-          Polymer.dom(input).setAttribute('end-date', '2016-08-30');
-          Polymer.dom(input).setAttribute('end-date', '2016-08-30');
-          expectedValue = " to 2016-08-25";
-          Polymer.dom(input).setAttribute('end-date', '2016-08-25');
-          Polymer.dom(input).setAttribute('end-date', '2016-08-25');
-          expectedValue = "2016-08-10 to 2016-08-25";
-          Polymer.dom(input).setAttribute('start-date', '2016-08-10');
-          Polymer.dom(input).setAttribute('start-date', '2016-08-10');
-
-          var inputField = input.$.triggerRange;
-          assert.equal("8/10/2016 to 8/25/2016", inputField.value, "display value is not correct");
-
-          flush(function() {
-            assert.equal(3, eventCount, "at-form-radio didn't fire correct number of events");
-            done();
-          });
-        });
-
-        test('start date and end date set as attribute, changing start date or end date triggers value-changed event', function(done) {
-          var input = fixture('attrStartDateEndDate');
-          assert.equal(input.startDate, "2016-08-15", "initial start date not set correctly");
-          assert.equal(input.endDate, "2016-08-25", "initial end date not set correctly");
-          assert.equal(input.value, '2016-08-15 to 2016-08-25', 'initial value not set correctly');
-
-          var eventCount = 0;
-          var expectedValue = "";
-          input.addEventListener('value-changed', function(event) {
-            assert.equal(event.detail.value, expectedValue, 'event detail value not set correctly');
-            assert.equal(input.value, expectedValue, 'element value not set correctly');
-            eventCount += 1;
-
-          });
-          var inputField = input.$.triggerRange;
-
-          expectedValue = "2016-08-15 to 2016-08-25";
-          Polymer.dom(input).setAttribute('start-date', '2016-08-15');
-          Polymer.dom(input).setAttribute('start-date', '2016-08-15');
-          Polymer.dom(input).setAttribute('end-date', '2016-08-25');
-          Polymer.dom(input).setAttribute('end-date', '2016-08-25');
-
-          assert.equal("8/15/2016 to 8/25/2016", inputField.value, "display value is not correct");
-
-          expectedValue = "2016-08-15 to 2016-08-30";
-          Polymer.dom(input).setAttribute('end-date', '2016-08-30');
-          Polymer.dom(input).setAttribute('end-date', '2016-08-30');
-
-          assert.equal("8/15/2016 to 8/30/2016", inputField.value, "display value is not correct");
-
-          expectedValue = "2016-08-15 to 2016-08-25";
-          Polymer.dom(input).setAttribute('end-date', '2016-08-25');
-          Polymer.dom(input).setAttribute('end-date', '2016-08-25');
-
-          assert.equal("8/15/2016 to 8/25/2016", inputField.value, "display value is not correct");
-
-          expectedValue = "2016-08-10 to 2016-08-25";
-          Polymer.dom(input).setAttribute('start-date', '2016-08-10');
-          Polymer.dom(input).setAttribute('start-date', '2016-08-10');
-
-          assert.equal("8/10/2016 to 8/25/2016", inputField.value, "display value is not correct");
-
-          flush(function() {
-            assert.equal(3, eventCount, "at-form-radio didn't fire correct number of events");
-            done();
-          });
-        });
-      });
-
-      suite('tests where property values are set in code', function() {
-
-        test("setting just start date doesn't trigger value-changed event", function(done) {
-          var input = fixture('propertyTests');
-          input.startDate = "2016-08-15";
-
-          assert.equal(input.startDate, "2016-08-15", "initial start date not set correctly");
-          assert.equal(input.endDate, "", "initial end date not set correctly");
-          assert.equal(input.value, '2016-08-15 to ', 'initial value not set correctly');
-
-          var expectedValue = "";
-          var eventCount = 0;
-
-          input.addEventListener('value-changed', function(event) {
-            assert.equal(event.detail.value, expectedValue, 'event detail value not set correctly');
-            assert.equal(input.value, expectedValue, 'element value not set correctly');
-            eventCount += 1;
-          });
-
-          var inputField = input.$.triggerRange;
-          assert.equal("", inputField.value, "display value is not correct");
-
-          input.startDate = "2016-08-15";
-          assert.equal("", inputField.value, "display value is not correct");
-          input.startDate = "2016-08-15";
-          assert.equal("", inputField.value, "display value is not correct");
-          expectedValue = "2016-08-10 to ";
-          input.startDate = "2016-08-10";
-          assert.equal("", inputField.value, "display value is not correct");
-          input.startDate = "2016-08-10";
-          assert.equal("", inputField.value, "display value is not correct");
-          expectedValue = "2016-08-25 to ";
-          input.startDate = "2016-08-25";
-          assert.equal("", inputField.value, "display value is not correct");
-          input.startDate = "2016-08-25";
-          assert.equal("", inputField.value, "display value is not correct");
-
-          flush(function() {
-            assert.equal(eventCount, 2, 'value-changed event was fired');
-            done();
-          });
-        });
-
-        test("setting just end date doesn't trigger value-changed event", function(done) {
-          var input = fixture('propertyTests');
-          input.endDate = "2016-08-15";
-
-          assert.equal(input.startDate, "", "initial start date not set correctly");
-          assert.equal(input.endDate, "2016-08-15", "initial end date not set correctly");
-          assert.equal(input.value, ' to 2016-08-15', 'initial value not set correctly');
-
-          var expectedValue = "";
-          var eventCount = 0;
-
-          input.addEventListener('value-changed', function(event) {
-            assert.equal(event.detail.value, expectedValue, 'event detail value not set correctly');
-            assert.equal(input.value, expectedValue, 'element value not set correctly');
-            eventCount += 1;
-          });
-
-          var inputField = input.$.triggerRange;
-          assert.equal("", inputField.value, "display value is not correct");
-
-          input.endDate = "2016-08-15";
-          assert.equal("", inputField.value, "display value is not correct");
-          input.endDate = "2016-08-15";
-          assert.equal("", inputField.value, "display value is not correct");
-          expectedValue = " to 2016-08-10";
-          input.endDate = "2016-08-10";
-          assert.equal("", inputField.value, "display value is not correct");
-          input.endDate = "2016-08-10";
-          assert.equal("", inputField.value, "display value is not correct");
-          expectedValue = " to 2016-08-25";
-          input.endDate = "2016-08-25";
-          assert.equal("", inputField.value, "display value is not correct");
-          input.endDate = "2016-08-25";
-          assert.equal("", inputField.value, "display value is not correct");
-
-          flush(function() {
-            assert.equal(eventCount, 2, 'value-changed event was fired');
-            done();
-          });
-
-          test("setting start and end date triggers value-changed event", function(done) {
-            var input = fixture('propertyTests');
-            input.startDate = "2016-08-15";
-            input.endDate = "2016-08-25";
-
-            assert.equal(input.startDate, "2016-08-15", "initial start date not set correctly");
-            assert.equal(input.endDate, "2016-08-25", "initial end date not set correctly");
-            assert.equal(input.value, '2016-08-15 to 2016-08-25', 'initial value not set correctly');
+            var insertPoint = input.$.insertPoint;
+            var radios = Polymer.dom(insertPoint).children;
+            radios.forEach(function(radio, index) {
+              var item = input.xvaluelist[index];
+              assert.equal(radio.getAttribute("name"), item.value, "radio name not set correctly");
+              if (radio.shadowRoot === undefined) {
+                assert.equal(radio.$.radioLabel.textContent, item.title, "radio label not set correctly");
+              } else {
+                assert.equal(radio.textContent, item.title, "radio label not set correctly");
+              }
+            });
 
             var expectedValue = "";
             var eventCount = 0;
-
             input.addEventListener('value-changed', function(event) {
               assert.equal(event.detail.value, expectedValue, 'event detail value not set correctly');
               assert.equal(input.value, expectedValue, 'element value not set correctly');
               eventCount += 1;
+
             });
+            expectedValue = "v1";
+            input.value = "v1";
+            Polymer.dom(input).setAttribute('value', "v1");
+            input.value = "v1";
 
-            var inputField = input.$.triggerRange;
-            assert.equal("8/18/2016 to 8/25/2016", inputField.value, "display value is not correct");
+            expectedValue = "v2";
+            input.value = "v2";
+            Polymer.dom(input).setAttribute('value', "v2");
+            input.value = "v2";
 
-            expectedValue = "2016-08-15 to 2016-08-25";
-            input.startDate = "2016-08-15";
-            input.startDate = "2016-08-15";
-            assert.equal("8/15/2016 to 8/25/2016", inputField.value, "display value is not correct");
-            input.endDate = "2016-08-25";
-            input.endDate = "2016-08-25";
-            assert.equal("8/15/2016 to 8/25/2016", inputField.value, "display value is not correct");
-
-            expectedValue = "2016-08-10 to 2016-08-25";
-            input.startDate = "2016-08-10";
-            input.startDate = "2016-08-10";
-            assert.equal("8/10/2016 to 8/25/2016", inputField.value, "display value is not correct");
-
-            expectedValue = "2016-08-10 to 2016-08-30";
-            input.endDate = "2016-08-30";
-            input.endDate = "2016-08-30";
-            assert.equal("8/10/2016 to 8/30/2016", inputField.value, "display value is not correct");
-
-            expectedValue = "2016-08-15 to 2016-08-25";
-            input.startDate = "2016-08-15";
-            input.startDate = "2016-08-15";
-            assert.equal("8/15/2016 to 8/25/2016", inputField.value, "display value is not correct");
+            expectedValue = "v3";
+            input.value = "v3";
+            Polymer.dom(input).setAttribute('value', "v3");
+            input.value = "v3";
 
             flush(function() {
-              assert.equal(eventCount, 3, 'value-changed event was fired');
+              assert.equal(3, eventCount, "at-form-radio didn't fire correct number of events");
               done();
+            });
+          });
+        });
+
+        test('end date set as attribute, setting start date triggers value-changed event', function(done) {
+          var input = fixture('attrXvaluelistValue');
+          assert.equal(true, areEqual(input.xvaluelist, initialXvalueList), "xvaluelist not set correctly");
+          assert.equal(input.value, 'v1', 'initial value not set correctly');
+
+          flush(function() {
+            var insertPoint = input.$.insertPoint;
+            var radios = Polymer.dom(insertPoint).children;
+            radios.forEach(function(radio, index) {
+              var item = input.xvaluelist[index];
+              assert.equal(radio.getAttribute("name"), item.value, "radio name not set correctly");
+              if (radio.shadowRoot === undefined) {
+                assert.equal(radio.$.radioLabel.textContent, item.title, "radio label not set correctly");
+              } else {
+                assert.equal(radio.textContent, item.title, "radio label not set correctly");
+              }
+            });
+
+            var expectedValue = "";
+            var eventCount = 0;
+            input.addEventListener('value-changed', function(event) {
+              assert.equal(event.detail.value, expectedValue, 'event detail value not set correctly');
+              assert.equal(input.value, expectedValue, 'element value not set correctly');
+              eventCount += 1;
+
+            });
+            expectedValue = "v1";
+            input.value = "v1";
+            Polymer.dom(input).setAttribute('value', "v1");
+            input.value = "v1";
+
+            expectedValue = "v2";
+            input.value = "v2";
+            Polymer.dom(input).setAttribute('value', "v2");
+            input.value = "v2";
+
+            expectedValue = "v3";
+            input.value = "v3";
+            Polymer.dom(input).setAttribute('value', "v3");
+            input.value = "v3";
+
+            flush(function() {
+              assert.equal(2, eventCount, "at-form-radio didn't fire correct number of events");
+              done();
+            });
+          });
+        });
+
+        suite('tests where property values are set in code', function() {
+
+          test("xvaluelist set as property, setting value triggers value-changed event", function(done) {
+            var input = fixture('propertyTests');
+            input.xvaluelist = initialXvalueList;
+
+            assert.equal(true, areEqual(input.xvaluelist, initialXvalueList), "xvaluelist not set correctly");
+            assert.equal(input.value, '', 'initial value not set correctly');
+
+            flush(function() {
+              var insertPoint = input.$.insertPoint;
+              var radios = Polymer.dom(insertPoint).children;
+              radios.forEach(function(radio, index) {
+                var item = input.xvaluelist[index];
+                assert.equal(radio.getAttribute("name"), item.value, "radio name not set correctly");
+                if (radio.shadowRoot === undefined) {
+                  assert.equal(radio.$.radioLabel.textContent, item.title, "radio label not set correctly");
+                } else {
+                  assert.equal(radio.textContent, item.title, "radio label not set correctly");
+                }
+              });
+
+              var expectedValue = "";
+              var eventCount = 0;
+              input.addEventListener('value-changed', function(event) {
+                assert.equal(event.detail.value, expectedValue, 'event detail value not set correctly');
+                assert.equal(input.value, expectedValue, 'element value not set correctly');
+                eventCount += 1;
+
+              });
+              expectedValue = "v1";
+              input.value = "v1";
+              Polymer.dom(input).setAttribute('value', "v1");
+              input.value = "v1";
+
+              expectedValue = "v2";
+              input.value = "v2";
+              Polymer.dom(input).setAttribute('value', "v2");
+              input.value = "v2";
+
+              expectedValue = "v3";
+              input.value = "v3";
+              Polymer.dom(input).setAttribute('value', "v3");
+              input.value = "v3";
+
+              flush(function() {
+                assert.equal(3, eventCount, "at-form-radio didn't fire correct number of events");
+                done();
+              });
             });
 
           });

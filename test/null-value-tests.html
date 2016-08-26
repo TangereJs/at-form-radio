@@ -3,7 +3,7 @@
 
 <head>
 
-  <title>at-form-daterange tests</title>
+  <title>at-form-radio tests</title>
 
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
@@ -15,7 +15,7 @@
   <script src="../../iron-test-helpers/test-helpers.js"></script>
   <script src="../../iron-test-helpers/mock-interactions.js"></script>
 
-  <link rel="import" href="../at-form-daterange.html">
+  <link rel="import" href="../at-form-radio.html">
 
 </head>
 
@@ -23,306 +23,251 @@
 
   <test-fixture id="attrNullValue">
     <template>
-      <at-form-daterange value=null></at-form-daterange>
+      <at-form-radio value=null></at-form-radio>
     </template>
   </test-fixture>
 
   <test-fixture id="attrNullStringValue">
     <template>
-      <at-form-daterange value="null"></at-form-daterange>
+      <at-form-radio value="null"></at-form-radio>
     </template>
   </test-fixture>
 
   <test-fixture id="attrNullValueAndRequired">
     <template>
-      <at-form-daterange required value=null></at-form-daterange>
+      <at-form-radio required value=null></at-form-radio>
     </template>
   </test-fixture>
 
   <test-fixture id="attrNullStringValueAndRequired">
     <template>
-      <at-form-daterange required value="null"></at-form-daterange>
+      <at-form-radio required value="null"></at-form-radio>
     </template>
   </test-fixture>
 
-  <test-fixture id="attrNullValueAndFormat">
+  <test-fixture id="propertyTests">
     <template>
-      <at-form-daterange format="DD-MM-YYYY" value=null></at-form-daterange>
-    </template>
-  </test-fixture>
-
-  <test-fixture id="attrNullStringValueAndFormat">
-    <template>
-      <at-form-daterange format="YYYY-DD-MM" value="null"></at-form-daterange>
+      <at-form-radio></at-form-radio>
     </template>
   </test-fixture>
 
   <script>
     suite('null value tests', function() {
 
-      test('attribute value set to null', function(done) {
-        var input = fixture('attrNullValue');
-        assert.equal(input.value, "null", 'value not set correctly');
-        assert.equal(input.valid, true, 'value not set correctly');
+      suite('tests where properties are set as attributes', function() {
 
-        var eventCount = 0;
-        input.addEventListener('value-changed', function(event) {
-          assert.equal(event.detail.value, '2016-06-10 to 2016-06-15', 'event detail value not set correctly');
-          assert.equal(input.value, '2016-06-10 to 2016-06-15', 'event detail value not set correctly');
-          assert.equal(input.valid, true, 'element is invalid');
-          eventCount += 1;
-        });
-
-        input.value = '2016-06-10 to 2016-06-15';
-        Polymer.dom(input).setAttribute('value', '2016-06-10 to 2016-06-15');
-        input.value = '2016-06-10 to 2016-06-15';
-        Polymer.dom(input).setAttribute('value', '2016-06-10 to 2016-06-15');
-
-        flush(function() {
-          assert.equal(eventCount, 1);
-          done();
-        });
-      });
-
-      test('attribute value set to "null"', function(done) {
-        var input = fixture('attrNullStringValue');
-        assert.equal(input.value, "null", 'value not set correctly');
-        assert.equal(input.valid, true, 'value not set correctly');
-
-        var eventCount = 0;
-        input.addEventListener('value-changed', function(event) {
-          assert.equal(event.detail.value, '2016-06-10 to 2016-06-15', 'event detail value not set correctly');
-          assert.equal(input.value, '2016-06-10 to 2016-06-15', 'event detail value not set correctly');
+        test('attribute value set to null', function(done) {
+          var input = fixture('attrNullValue');
+          assert.equal(input.value, "null", 'value not set correctly');
           assert.equal(input.valid, true, 'value not set correctly');
-          eventCount += 1;
+
+          var eventCount = 0;
+          input.addEventListener('value-changed', function(event) {
+            assert.equal(event.detail.value, 'v1', 'event detail value not set correctly');
+            assert.equal(input.value, 'v1', 'event detail value not set correctly');
+            assert.equal(input.valid, true, 'element is invalid');
+            eventCount += 1;
+          });
+
+          input.value = 'v1';
+          Polymer.dom(input).setAttribute('value', 'v1');
+          input.value = 'v1';
+          Polymer.dom(input).setAttribute('value', 'v1');
+
+          flush(function() {
+            assert.equal(eventCount, 1);
+            done();
+          });
         });
 
-        input.value = '2016-06-10 to 2016-06-15';
-        Polymer.dom(input).setAttribute('value', '2016-06-10 to 2016-06-15');
-        input.value = '2016-06-10 to 2016-06-15';
-        Polymer.dom(input).setAttribute('value', '2016-06-10 to 2016-06-15');
+        test('attribute value set to "null"', function(done) {
+          var input = fixture('attrNullStringValue');
+          assert.equal(input.value, "null", 'value not set correctly');
+          assert.equal(input.valid, true, 'value not set correctly');
 
-        flush(function() {
-          assert.equal(eventCount, 1);
-          done();
+          var eventCount = 0;
+          input.addEventListener('value-changed', function(event) {
+            assert.equal(event.detail.value, 'v1', 'event detail value not set correctly');
+            assert.equal(input.value, 'v1', 'event detail value not set correctly');
+            assert.equal(input.valid, true, 'value not set correctly');
+            eventCount += 1;
+          });
+
+          input.value = 'v1';
+          Polymer.dom(input).setAttribute('value', 'v1');
+          input.value = 'v1';
+          Polymer.dom(input).setAttribute('value', 'v1');
+
+          flush(function() {
+            assert.equal(eventCount, 1);
+            done();
+          });
         });
-      });
 
-      test('attribute value set to null and required', function(done) {
-        var input = fixture('attrNullValueAndRequired');
-        assert.equal(input.value, "null", 'value not set correctly');
-        assert.equal(input.required, true, 'required is not set correctly');
-        assert.equal(input.valid, true, 'element is not invalid');
-
-        var eventCount = 0;
-        input.addEventListener('value-changed', function(event) {
-          assert.equal(event.detail.value, '2016-06-10 to 2016-06-15', 'event detail value not set correctly');
-          assert.equal(input.value, '2016-06-10 to 2016-06-15', 'event detail value not set correctly');
+        test('attribute value set to null and required', function(done) {
+          var input = fixture('attrNullValueAndRequired');
+          assert.equal(input.value, "null", 'value not set correctly');
           assert.equal(input.required, true, 'required is not set correctly');
           assert.equal(input.valid, true, 'element is not invalid');
-          eventCount += 1;
+
+          var eventCount = 0;
+          input.addEventListener('value-changed', function(event) {
+            assert.equal(event.detail.value, 'v1', 'event detail value not set correctly');
+            assert.equal(input.value, 'v1', 'event detail value not set correctly');
+            assert.equal(input.required, true, 'required is not set correctly');
+            assert.equal(input.valid, true, 'element is not invalid');
+            eventCount += 1;
+          });
+
+          input.value = 'v1';
+          Polymer.dom(input).setAttribute('value', 'v1');
+          input.value = 'v1';
+          Polymer.dom(input).setAttribute('value', 'v1');
+
+          flush(function() {
+            assert.equal(eventCount, 1);
+            done();
+          });
         });
 
-        input.value = '2016-06-10 to 2016-06-15';
-        Polymer.dom(input).setAttribute('value', '2016-06-10 to 2016-06-15');
-        input.value = '2016-06-10 to 2016-06-15';
-        Polymer.dom(input).setAttribute('value', '2016-06-10 to 2016-06-15');
-
-        flush(function() {
-          assert.equal(eventCount, 1);
-          done();
-        });
-      });
-
-      test('attribute value set to "null" and required', function(done) {
-        var input = fixture('attrNullStringValueAndRequired');
-        assert.equal(input.value, "null", 'value not set correctly');
-        assert.equal(input.required, true, 'required is not set correctly');
-        assert.equal(input.valid, true, 'value not set correctly');
-
-        var eventCount = 0;
-        input.addEventListener('value-changed', function(event) {
-          assert.equal(event.detail.value, '2016-06-10 to 2016-06-15', 'event detail value not set correctly');
-          assert.equal(input.value, '2016-06-10 to 2016-06-15', 'event detail value not set correctly');
+        test('attribute value set to "null" and required', function(done) {
+          var input = fixture('attrNullStringValueAndRequired');
+          assert.equal(input.value, "null", 'value not set correctly');
           assert.equal(input.required, true, 'required is not set correctly');
           assert.equal(input.valid, true, 'value not set correctly');
-          eventCount += 1;
-        });
 
-        input.value = '2016-06-10 to 2016-06-15';
-        Polymer.dom(input).setAttribute('value', '2016-06-10 to 2016-06-15');
-        input.value = '2016-06-10 to 2016-06-15';
-        Polymer.dom(input).setAttribute('value', '2016-06-10 to 2016-06-15');
+          var eventCount = 0;
+          input.addEventListener('value-changed', function(event) {
+            assert.equal(event.detail.value, 'v1', 'event detail value not set correctly');
+            assert.equal(input.value, 'v1', 'event detail value not set correctly');
+            assert.equal(input.required, true, 'required is not set correctly');
+            assert.equal(input.valid, true, 'value not set correctly');
+            eventCount += 1;
+          });
 
-        flush(function() {
-          assert.equal(eventCount, 1);
-          done();
+          input.value = 'v1';
+          Polymer.dom(input).setAttribute('value', 'v1');
+          input.value = 'v1';
+          Polymer.dom(input).setAttribute('value', 'v1');
+
+          flush(function() {
+            assert.equal(eventCount, 1);
+            done();
+          });
         });
       });
-
       /********************************************************************************/
       /* Property value tests
       /********************************************************************************/
+      suite('tests where properties are set in code', function() {
 
-      test('property value set to null', function(done) {
-        var input = document.createElement('at-form-daterange');
-        input.value = null;
+        test('property value set to null', function(done) {
+          var input = fixture('propertyTests');
+          input.value = null;
 
-        assert.equal(input.value, null, 'value not set correctly');
-        assert.equal(input.valid, true, 'element is not valid');
-
-        var eventCount = 0;
-        input.addEventListener('value-changed', function(event) {
-          assert.equal(event.detail.value, '2016-06-10 to 2016-06-15', 'event detail value not set correctly');
-          assert.equal(input.value, '2016-06-10 to 2016-06-15', 'event detail value not set correctly');
-          assert.equal(input.valid, true, 'element is invalid');
-          eventCount += 1;
-        });
-
-        input.value = '2016-06-10 to 2016-06-15';
-        Polymer.dom(input).setAttribute('value', '2016-06-10 to 2016-06-15');
-        input.value = '2016-06-10 to 2016-06-15';
-        Polymer.dom(input).setAttribute('value', '2016-06-10 to 2016-06-15');
-
-        flush(function() {
-          assert.equal(eventCount, 1);
-          done();
-        });
-      });
-
-      test('property value set to "null"', function(done) {
-        var input = document.createElement('at-form-daterange');
-        input.value = "null";
-
-        assert.equal(input.value, "null", 'value not set correctly');
-        assert.equal(input.valid, true, 'element is not valid');
-
-        var eventCount = 0;
-        input.addEventListener('value-changed', function(event) {
-          assert.equal(event.detail.value, '2016-06-10 to 2016-06-15', 'event detail value not set correctly');
-          assert.equal(input.value, '2016-06-10 to 2016-06-15', 'event detail value not set correctly');
+          assert.equal(input.value, null, 'value not set correctly');
           assert.equal(input.valid, true, 'element is not valid');
-          eventCount += 1;
+
+          var eventCount = 0;
+          input.addEventListener('value-changed', function(event) {
+            assert.equal(event.detail.value, 'v1', 'event detail value not set correctly');
+            assert.equal(input.value, 'v1', 'event detail value not set correctly');
+            assert.equal(input.valid, true, 'element is invalid');
+            eventCount += 1;
+          });
+
+          input.value = 'v1';
+          Polymer.dom(input).setAttribute('value', 'v1');
+          input.value = 'v1';
+          Polymer.dom(input).setAttribute('value', 'v1');
+
+          flush(function() {
+            assert.equal(eventCount, 1);
+            done();
+          });
         });
 
-        input.value = '2016-06-10 to 2016-06-15';
-        Polymer.dom(input).setAttribute('value', '2016-06-10 to 2016-06-15');
-        input.value = '2016-06-10 to 2016-06-15';
-        Polymer.dom(input).setAttribute('value', '2016-06-10 to 2016-06-15');
+        test('property value set to "null"', function(done) {
+          var input = fixture('propertyTests');
+          input.value = "null";
 
-        flush(function() {
-          assert.equal(eventCount, 1);
-          done();
-        });
-      });
-
-      test('property value set to null and required', function(done) {
-        var input = document.createElement('at-form-daterange');
-        input.required = true;
-        input.value = null;
-
-        assert.equal(input.value, null, 'value not set correctly');
-        assert.equal(input.valid, false, 'element is valid');
-
-        var eventCount = 0;
-        input.addEventListener('value-changed', function(event) {
-          assert.equal(event.detail.value, '2016-06-10 to 2016-06-15', 'event detail value not set correctly');
-          assert.equal(input.value, '2016-06-10 to 2016-06-15', 'event detail value not set correctly');
-          assert.equal(input.valid, true, 'value not set correctly');
-          eventCount += 1;
-        });
-
-        input.value = '2016-06-10 to 2016-06-15';
-        Polymer.dom(input).setAttribute('value', '2016-06-10 to 2016-06-15');
-        input.value = '2016-06-10 to 2016-06-15';
-        Polymer.dom(input).setAttribute('value', '2016-06-10 to 2016-06-15');
-
-        flush(function() {
-          assert.equal(eventCount, 1);
-          done();
-        });
-      });
-
-      test('property value set to "null" and required', function(done) {
-        var input = document.createElement('at-form-daterange');
-        input.required = true;
-        input.value = "null";
-
-        assert.equal(input.value, "null", 'value not set correctly');
-        assert.equal(input.valid, true, 'element is invalid');
-
-        var eventCount = 0;
-        input.addEventListener('value-changed', function(event) {
-          assert.equal(event.detail.value, '2016-06-10 to 2016-06-15', 'event detail value not set correctly');
-          assert.equal(input.value, '2016-06-10 to 2016-06-15', 'event detail value not set correctly');
+          assert.equal(input.value, "null", 'value not set correctly');
           assert.equal(input.valid, true, 'element is not valid');
-          eventCount += 1;
+
+          var eventCount = 0;
+          input.addEventListener('value-changed', function(event) {
+            assert.equal(event.detail.value, 'v1', 'event detail value not set correctly');
+            assert.equal(input.value, 'v1', 'event detail value not set correctly');
+            assert.equal(input.valid, true, 'element is not valid');
+            eventCount += 1;
+          });
+
+          input.value = 'v1';
+          Polymer.dom(input).setAttribute('value', 'v1');
+          input.value = 'v1';
+          Polymer.dom(input).setAttribute('value', 'v1');
+
+          flush(function() {
+            assert.equal(eventCount, 1);
+            done();
+          });
         });
 
-        input.value = '2016-06-10 to 2016-06-15';
-        Polymer.dom(input).setAttribute('value', '2016-06-10 to 2016-06-15');
-        input.value = '2016-06-10 to 2016-06-15';
-        Polymer.dom(input).setAttribute('value', '2016-06-10 to 2016-06-15');
+        test('property value set to null and required', function(done) {
+          var input = fixture('propertyTests');
+          input.required = true;
+          input.value = null;
 
-        flush(function() {
-          assert.equal(eventCount, 1);
-          done();
+          assert.equal(input.value, null, 'value not set correctly');
+          assert.equal(input.valid, false, 'element is valid');
+
+          var eventCount = 0;
+          input.addEventListener('value-changed', function(event) {
+            assert.equal(event.detail.value, 'v1', 'event detail value not set correctly');
+            assert.equal(input.value, 'v1', 'event detail value not set correctly');
+            assert.equal(input.valid, true, 'value not set correctly');
+            eventCount += 1;
+          });
+
+          input.value = 'v1';
+          Polymer.dom(input).setAttribute('value', 'v1');
+          input.value = 'v1';
+          Polymer.dom(input).setAttribute('value', 'v1');
+
+          flush(function() {
+            assert.equal(eventCount, 1);
+            done();
+          });
         });
-      });
 
-      test('property value set to null and user input is empty string', function(done) {
-        var input = document.createElement('at-form-daterange');
-        input.value = null;
+        test('property value set to "null" and required', function(done) {
+          var input = fixture('propertyTests');
+          input.required = true;
+          input.value = "null";
 
-        assert.equal(input.value, null, 'value not set correctly');
-        assert.equal(input.valid, true, 'element is invalid');
-
-        var eventCount = 0;
-        input.addEventListener('value-changed', function(event) {
-          assert.equal(event.detail.value, '', 'event detail value not set correctly');
-          assert.equal(input.value, '', 'event detail value not set correctly');
+          assert.equal(input.value, "null", 'value not set correctly');
           assert.equal(input.valid, true, 'element is invalid');
-          eventCount += 1;
+
+          var eventCount = 0;
+          input.addEventListener('value-changed', function(event) {
+            assert.equal(event.detail.value, 'v1', 'event detail value not set correctly');
+            assert.equal(input.value, 'v1', 'event detail value not set correctly');
+            assert.equal(input.valid, true, 'element is not valid');
+            eventCount += 1;
+          });
+
+          input.value = 'v1';
+          Polymer.dom(input).setAttribute('value', 'v1');
+          input.value = 'v1';
+          Polymer.dom(input).setAttribute('value', 'v1');
+
+          flush(function() {
+            assert.equal(eventCount, 1);
+            done();
+          });
         });
 
-        var inputElement = input.$.triggerRange;
-
-        inputElement.value = "";
-        TestHelpers.fireEvent('change', {}, inputElement);
-
-        flush(function() {
-          assert.equal(eventCount, 0);
-          done();
-        });
       });
-
-      test('property value set to null and user input is non empty string', function(done) {
-        var input = document.createElement('at-form-daterange');
-        input.value = null;
-
-        assert.equal(input.value, null, 'value not set correctly');
-        assert.equal(input.valid, true, 'element is invalid');
-
-        var eventCount = 0;
-        input.addEventListener('value-changed', function(event) {
-          assert.equal(event.detail.value, 'lorem ipsum', 'event detail value not set correctly');
-          assert.equal(input.value, 'lorem ipsum', 'event detail value not set correctly');
-
-          assert.equal(input.valid, true, 'element is invalid');
-          eventCount += 1;
-        });
-
-        var inputElement = input.$.triggerRange;
-
-        inputElement.value = '2016-06-10 to 2016-06-15';
-        TestHelpers.fireEvent('change', {}, inputElement);
-
-        flush(function() {
-          assert.equal(eventCount, 0);
-          done();
-        });
-      });
-
     });
   </script>
 

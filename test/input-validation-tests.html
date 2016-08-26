@@ -48,8 +48,19 @@
         return fmt;
       }
 
+      var initialXvalueList = [{
+        title: "t1",
+        value: "v1"
+      }, {
+        title: "t2",
+        value: "v2"
+      }, {
+        title: "t3",
+        value: "v3"
+      }];
+
       test('invalid schemas test, schema is not an object', function() {
-        var inputValidation = Tangere.behaviors.AtFormDaterangeInputValidation;
+        var inputValidation = Tangere.behaviors.AtFormRadioInputValidation;
         var invalidSchemaValues = [ undefined, null, "", "undefined", "null", true, false, "true", "false", 42, "42", 3.14159, "3.14159", [], "[]", function() { return undefined; }];
 
         var value = "";
@@ -64,7 +75,7 @@
       });
 
       test('invalid schemas test, schema.properties is not an object', function() {
-        var inputValidation = Tangere.behaviors.AtFormDaterangeInputValidation;
+        var inputValidation = Tangere.behaviors.AtFormRadioInputValidation;
         var schema = {};
         var value = "";
 
@@ -86,7 +97,7 @@
       });
 
       test('invalid schemas test, schema.properties.value is not an object', function() {
-        var inputValidation = Tangere.behaviors.AtFormDaterangeInputValidation;
+        var inputValidation = Tangere.behaviors.AtFormRadioInputValidation;
         var schema = {
           properties: {}
         };
@@ -110,7 +121,7 @@
       });
 
       test('invalid schemas test, schema.properties.value.type is not a function', function() {
-        var inputValidation = Tangere.behaviors.AtFormDaterangeInputValidation;
+        var inputValidation = Tangere.behaviors.AtFormRadioInputValidation;
         var schema = {
           properties: {
             value: {}
@@ -136,7 +147,7 @@
       });
 
       test('invalid schemas test, schema.properties.value.type is valid, required is invalid', function() {
-        var inputValidation = Tangere.behaviors.AtFormDaterangeInputValidation;
+        var inputValidation = Tangere.behaviors.AtFormRadioInputValidation;
         var schema = {
           properties: {
             value: {
@@ -163,8 +174,8 @@
         }
       });
 
-      test('invalid schemas test, schema.properties.value.type is valid, required is valid, _valueFormat is invalid', function() {
-        var inputValidation = Tangere.behaviors.AtFormDaterangeInputValidation;
+      test('invalid schemas test, schema.properties.value.type is valid, required is valid, xvaluelist is invalid', function() {
+        var inputValidation = Tangere.behaviors.AtFormRadioInputValidation;
         var schema = {
           properties: {
             value: {
@@ -176,24 +187,24 @@
         var value = "";
 
         var validationResult = inputValidation._validateData(schema, value, format);
-        assert.equal(validationResult.isValid, false, 'schema._valueFormat is valid');
-        assert.equal(validationResult.errorMessage, "schema._valueFormat is not a string value.", 'error message not set correctly');
+        assert.equal(validationResult.isValid, false, 'schema.xvaluelist is valid');
+        assert.equal(validationResult.errorMessage, "schema.xvaluelist is not an array.", 'error message not set correctly');
 
-        var invalidValues = [ undefined, null, true, false, [], {}, function () { return undefined; }];
+        var invalidValues = [ undefined, null, "", "undefined", "null", true, false, "true", "false", 42, "42", 3.14159, "3.14159", {}, "{}", function() { return undefined; }];
 
         for (var i = 0; i < invalidValues.length; i++) {
           var invalidValue = invalidValues[i];
-          schema._valueFormat = invalidValue;
+          schema.xvaluelist = invalidValue;
 
           var validationResult = inputValidation._validateData(schema, value, format);
 
-          assert.equal(validationResult.isValid, false, 'schema._valueFormat is valid');
-          assert.equal(validationResult.errorMessage, "schema._valueFormat is not a string value.", 'error message not set correctly');
+          assert.equal(validationResult.isValid, false, 'schema.xvaluelist is valid');
+          assert.equal(validationResult.errorMessage, "schema.xvaluelist is not an array.", 'error message not set correctly');
         }
       });
 
       test('valid schemas test, invalid values', function() {
-        var inputValidation = Tangere.behaviors.AtFormDaterangeInputValidation;
+        var inputValidation = Tangere.behaviors.AtFormRadioInputValidation;
         var schema = {
           properties: {
             value: {
@@ -201,7 +212,7 @@
             }
           },
           required: false,
-          _valueFormat: "YYYY-MM-DD"
+          xvaluelist: initialXvalueList
         };
 
         var stringTypeString = getTypeString("");
@@ -228,7 +239,7 @@
       });
 
       test('valid schema, value = [null, ""], required = [true, false] test', function() {
-        var inputValidation = Tangere.behaviors.AtFormDaterangeInputValidation;
+        var inputValidation = Tangere.behaviors.AtFormRadioInputValidation;
         var schema = {
           properties: {
             value: {
@@ -236,7 +247,7 @@
             }
           },
           required: false,
-          _valueFormat: "YYYY-MM-DD"
+          xvaluelist: initialXvalueList
         };
 
         var value = null;
@@ -265,7 +276,7 @@
         assert.equal(validationResult.errorMessage, "This field is required.");
 
 
-        value = "2016-06-16 to 2016-06-30";
+        value = "v2";
         schema.required = false;
 
         var validationResult = inputValidation._validateData(schema, value, format);

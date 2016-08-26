@@ -3,7 +3,7 @@
 
 <head>
 
-  <title>at-form-daterange tests</title>
+  <title>at-form-radio tests</title>
 
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
@@ -16,413 +16,276 @@
   <script src="../../iron-test-helpers/mock-interactions.js"></script>
 
   <link rel="import" href="../../at-i18n/at-i18n-behavior.html">
-  <link rel="import" href="../at-form-daterange.html">
+  <link rel="import" href="../at-form-radio.html">
 
 </head>
 
 <body>
 
-  <test-fixture id="valueAttrTests">
+  <test-fixture id="attrXvaluelist">
     <template>
-      <at-form-daterange></at-form-daterange>
+      <at-form-radio xvaluelist='[{ "title":"t1", "value": "v1" },{ "title":"t2", "value": "v2" },{ "title":"t3", "value": "v3" }]'></at-form-radio>
     </template>
   </test-fixture>
 
-  <test-fixture id="valueProgrammaticTests">
+  <test-fixture id="attrXvaluelistValueV1">
     <template>
-      <at-form-daterange></at-form-daterange>
+      <at-form-radio xvaluelist='[{ "title":"t1", "value": "v1" },{ "title":"t2", "value": "v2" },{ "title":"t3", "value": "v3" }]' value="v1"></at-form-radio>
+    </template>
+  </test-fixture>
+
+  <test-fixture id="attrXvaluelistValueV2">
+    <template>
+      <at-form-radio xvaluelist='[{ "title":"t1", "value": "v1" },{ "title":"t2", "value": "v2" },{ "title":"t3", "value": "v3" }]' value="v2"></at-form-radio>
+    </template>
+  </test-fixture>
+
+  <test-fixture id="attrXvaluelistValueV3">
+    <template>
+      <at-form-radio xvaluelist='[{ "title":"t1", "value": "v1" },{ "title":"t2", "value": "v2" },{ "title":"t3", "value": "v3" }]' value="v3"></at-form-radio>
+    </template>
+  </test-fixture>
+
+  <test-fixture id="attrXvaluelistValueV10">
+    <template>
+      <at-form-radio xvaluelist='[{ "title":"t1", "value": "v1" },{ "title":"t2", "value": "v2" },{ "title":"t3", "value": "v3" }]' value="v10"></at-form-radio>
+    </template>
+  </test-fixture>
+
+  <test-fixture id="propertyTests">
+    <template>
+      <at-form-radio></at-form-radio>
     </template>
   </test-fixture>
 
   <script>
     suite('value tests', function() {
 
-      suite('tests where start date and end date are set as attributes', function() {
-        function GenericAttributeTestFunction(input, startDates, endDates, expectedValues) {
-          var sdIndex;
-          var edIndex;
-          var startDate;
-          var endDate;
+      function isArray(obj) {
+        return Object.prototype.toString.call(obj) === "[object Array]";
+      }
 
-          for (var sdIndex = 0; sdIndex < startDates.length; sdIndex++) {
-            startDate = startDates[sdIndex];
-            Polymer.dom(input).setAttribute('start-date', startDate);
-            for (var edIndex = 0; edIndex < endDates.length; edIndex++) {
-              endDate = endDates[edIndex];
-              Polymer.dom(input).setAttribute('end-date', endDate);
+      function isObject(obj) {
+        return Object.prototype.toString.call(obj) === "[object Object]";
+      }
 
-              expectedValue = expectedValues[sdIndex * endDates.length + edIndex];
-              // console.log(input.T("startDate {0} endDate {1} expectedValue {2}", String(startDate), String(endDate), expectedValue));
-              assert.equal(input.value, expectedValue, "value is not calculated correctly");
-            }
+      function isFunction(obj) {
+        return Object.prototype.toString.call(obj) === "[object Function]";
+      }
+
+      function areEqual(obj1, obj2) {
+        var result = false;
+        var obj1PropertyValue;
+        var obj2PropertyValue;
+
+        if (isArray(obj1) && isArray(obj2)) {
+          result = obj1.length === obj2.length;
+          // if lengths are different return false
+          if (!result) {
+            return result;
           }
+
+          // else compare items in the arrays for equality
+          for (var i = 0; i < obj1.length && result; i++) {
+            obj1PropertyValue = obj1[i];
+            obj2PropertyValue = obj2[i];
+            result = areEqual(obj1PropertyValue, obj2PropertyValue);
+          }
+        } else if (isObject(obj1) && isObject(obj2)) {
+          var obj1Properties = Object.keys(obj1);
+          var obj2Properties = Object.keys(obj2);
+          // tests that these arrays have same lengths and same names
+          result = areEqual(obj1Properties, obj2Properties);
+
+          if (!result) {
+            return result;
+          }
+          // test that every property in both objects has same value
+          for (var j = 0; j < obj1Properties.length && result; j++) {
+            var obj1PropertyName = obj1Properties[j];
+            var obj2PropertyName = obj2Properties[j];
+            obj1PropertyValue = obj1[obj1PropertyName];
+            obj2PropertyValue = obj2[obj2PropertyName];
+            result = areEqual(obj1PropertyValue, obj2PropertyValue);
+          }
+        } else if (isFunction(obj1) && isFunction(obj2)) {
+          result = obj1.toString() === obj2.toString();
+        } else {
+          // this tests string, number, boolean, null and undefined
+          result = obj1 === obj2;
         }
 
-        // when start date and end date are set as attributes
-        // we test for all invalid combinations of start date and end date
-        test('start date and end date as attribute -> invalid values test', function() {
-          var input = fixture('valueAttrTests');
-          // we do not know what localized format is, so we set the format
-          input.format = "YYYY-MM-DD";
+        return result;
+      }
 
-          assert.equal(input.value, "", 'initially value is not empty');
+      var initialXvalueList = [{
+        title: "t1",
+        value: "v1"
+      }, {
+        title: "t2",
+        value: "v2"
+      }, {
+        title: "t3",
+        value: "v3"
+      }];
 
-          var startDates = [undefined, null, false, true, [], {}, "", "lorem ipsum", "2016-06-10"];
-          var endDates = [undefined, null, false, true, [], {}, "", "lorem ipsum"];
-          var expectedValues = [
-            "undefined to undefined", "undefined to null", "undefined to false", "undefined to true", "undefined to ", "undefined to [object Object]", "undefined to ", "undefined to lorem ipsum",
-            "null to undefined", "null to null", "null to false", "null to true", "null to ", "null to [object Object]", "null to ", "null to lorem ipsum",
-            "false to undefined", "false to null", "false to false", "false to true", "false to ", "false to [object Object]", "false to ", "false to lorem ipsum",
-            "true to undefined", "true to null", "true to false", "true to true", "true to ", "true to [object Object]", "true to ", "true to lorem ipsum",
-            " to undefined", " to null", " to false", " to true", " to ", " to [object Object]", " to ", " to lorem ipsum",
-            "[object Object] to undefined", "[object Object] to null", "[object Object] to false", "[object Object] to true", "[object Object] to ", "[object Object] to [object Object]", "[object Object] to ",
-            "[object Object] to lorem ipsum",
-            " to undefined", " to null", " to false", " to true", " to ", " to [object Object]", " to ", " to lorem ipsum",
-            "lorem ipsum to undefined", "lorem ipsum to null", "lorem ipsum to false", "lorem ipsum to true", "lorem ipsum to ", "lorem ipsum to [object Object]", "lorem ipsum to ", "lorem ipsum to lorem ipsum",
-            "2016-06-10 to undefined", "2016-06-10 to null", "2016-06-10 to false", "2016-06-10 to true", "2016-06-10 to ", "2016-06-10 to [object Object]", "2016-06-10 to ", "2016-06-10 to lorem ipsum",
-          ];
-          GenericAttributeTestFunction(input, startDates, endDates, expectedValues);
+      suite('tests where property values are set as attributes', function() {
 
-          startDates = [undefined, null, false, true, [], {}, "", "lorem ipsum"];
-          endDates = [undefined, null, false, true, [], {}, "", "lorem ipsum", "2016-06-10"];
-          expectedValues = [
-            "undefined to undefined", "undefined to null", "undefined to false", "undefined to true", "undefined to ", "undefined to [object Object]", "undefined to ", "undefined to lorem ipsum", "undefined to 2016-06-10",
-            "null to undefined", "null to null", "null to false", "null to true", "null to ", "null to [object Object]", "null to ", "null to lorem ipsum", "null to 2016-06-10",
-            "false to undefined", "false to null", "false to false", "false to true", "false to ", "false to [object Object]", "false to ", "false to lorem ipsum", "false to 2016-06-10",
-            "true to undefined", "true to null", "true to false", "true to true", "true to ", "true to [object Object]", "true to ", "true to lorem ipsum", "true to 2016-06-10",
-            " to undefined", " to null", " to false", " to true", " to ", " to [object Object]", " to ", " to lorem ipsum", " to 2016-06-10",
-            "[object Object] to undefined", "[object Object] to null", "[object Object] to false", "[object Object] to true", "[object Object] to ", "[object Object] to [object Object]", "[object Object] to ",
-            "[object Object] to lorem ipsum", "[object Object] to 2016-06-10",
-            " to undefined", " to null", " to false", " to true", " to ", " to [object Object]", " to ", " to lorem ipsum", " to 2016-06-10",
-            "lorem ipsum to undefined", "lorem ipsum to null", "lorem ipsum to false", "lorem ipsum to true", "lorem ipsum to ", "lorem ipsum to [object Object]", "lorem ipsum to ", "lorem ipsum to lorem ipsum",
-            "lorem ipsum to 2016-06-10",
-          ];
-          GenericAttributeTestFunction(input, startDates, endDates, expectedValues);
+        test('xvalue list, value is empty string', function() {
+          var element = fixture('attrXvaluelist');
+
+          assert.equal(true, areEqual(element.xvaluelist, initialXvalueList), "xvaluelist not set correctly");
+          assert.equal("", element.value, "initial value not correct");
+
+          var insertPoint = element.$.insertPoint;
+          var selected = Polymer.dom(insertPoint).querySelector('paper-radio-button[checked]');
+          assert.equal(true, selected === null, "item not selected");
+
+          element.value = "v1";
+          assert.equal("v1", element.value, "initial value not correct");
+
+          var insertPoint = element.$.insertPoint;
+          var selected = Polymer.dom(insertPoint).querySelector('paper-radio-button[name=v1]');
+          assert.equal(false, selected === null, "item not selected");
+          assert.equal(true, selected.hasAttribute('checked'), 'item not checked');
+          assert.equal(true, selected.hasAttribute('active'), 'item not active');
         });
 
-        // when start date and end date are set as attributes
-        // we test for valid combinations of start date and end date
-        test('start date and end date as attribute -> valid values test', function() {
-          var input = fixture('valueAttrTests');
-          // we do not know what localized format is, so we set the format
-          input.format = "YYYY-MM-DD";
+        test('xvalue list, value is v1', function() {
+          var element = fixture('attrXvaluelistValueV1');
 
-          assert.equal(input.value, "", 'value is not initially empty');
+          assert.equal(true, areEqual(element.xvaluelist, initialXvalueList), "xvaluelist not set correctly");
+          assert.equal("v1", element.value, "initial value not correct");
 
-          Polymer.dom(input).setAttribute('start-date', "2016-06-10");
-          Polymer.dom(input).setAttribute('end-date', "2016-06-17");
-          var expectedValue = input.T("{0} to {1}", "2016-06-10", "2016-06-17");
-          // start date is before end date so we expect a correct value to be produced
-          assert.equal(input.value, expectedValue, "value is not calculated correctly");
-          assert.equal(true, input.valid, "element is not valid");
+          var insertPoint = element.$.insertPoint;
+          var selected = Polymer.dom(insertPoint).querySelector('paper-radio-button[name=v1]');
+          assert.equal(false, selected === null, "item not selected");
+          assert.equal(true, selected.hasAttribute('checked'), 'item not checked');
+          assert.equal(true, selected.hasAttribute('active'), 'item not active');
+        });
 
-          Polymer.dom(input).setAttribute('start-date', "2016-06-17");
-          Polymer.dom(input).setAttribute('end-date', "2016-06-10");
-          var expectedValue = "2016-06-17 to 2016-06-10";
-          // start date is after end date so element should be invalid
-          assert.equal(input.value, expectedValue, "value is not calculated correctly");
-          assert.equal(input.valid, false, 'element is not invalid');
+        test('xvalue list, value is v2', function() {
+          var element = fixture('attrXvaluelistValueV2');
+
+          assert.equal(true, areEqual(element.xvaluelist, initialXvalueList), "xvaluelist not set correctly");
+          assert.equal("v2", element.value, "initial value not correct");
+
+          var insertPoint = element.$.insertPoint;
+          var selected = Polymer.dom(insertPoint).querySelector('paper-radio-button[name=v2]');
+          assert.equal(false, selected === null, "item not selected");
+          assert.equal(true, selected.hasAttribute('checked'), 'item not checked');
+          assert.equal(true, selected.hasAttribute('active'), 'item not active');
+        });
+
+        test('xvalue list, value is v3', function() {
+          var element = fixture('attrXvaluelistValueV3');
+
+          assert.equal(true, areEqual(element.xvaluelist, initialXvalueList), "xvaluelist not set correctly");
+          assert.equal("v3", element.value, "initial value not correct");
+
+          var insertPoint = element.$.insertPoint;
+          var selected = Polymer.dom(insertPoint).querySelector('paper-radio-button[name=v3]');
+          assert.equal(false, selected === null, "item not selected");
+          assert.equal(true, selected.hasAttribute('checked'), 'item not checked');
+          assert.equal(true, selected.hasAttribute('active'), 'item not active');
+        });
+
+        test('xvalue list, value is v10', function() {
+          var element = fixture('attrXvaluelistValueV10');
+
+          assert.equal(true, areEqual(element.xvaluelist, initialXvalueList), "xvaluelist not set correctly");
+          assert.equal("v10", element.value, "initial value not correct");
+
+          var insertPoint = element.$.insertPoint;
+          var selected = Polymer.dom(insertPoint).querySelector('paper-radio-button[name=v10]');
+          assert.equal(true, selected === null, "item is selected");
         });
 
       });
 
-      suite('tests where start date and end date are set in code', function() {
-        function isString(obj) {
-          return Object.prototype.toString.call(obj) === "[object String]";
-        }
+      suite('tests where property values are set in code', function() {
 
-        function GenericProgrammaticTestFunction(input, startDates, endDates, expectedValues) {
-          var sdIndex;
-          var edIndex;
-          var startDate;
-          var endDate;
+        test('xvalue list, value is empty string', function() {
+          var element = fixture('propertyTests');
+          element.xvaluelist = initialXvalueList;
 
-          for (var sdIndex = 0; sdIndex < startDates.length; sdIndex++) {
-            startDate = startDates[sdIndex];
-            input.startDate = startDate;
-            for (var edIndex = 0; edIndex < endDates.length; edIndex++) {
-              endDate = endDates[edIndex];
-              input.endDate = endDate;
+          assert.equal(true, areEqual(element.xvaluelist, initialXvalueList), "xvaluelist not set correctly");
+          assert.equal("", element.value, "initial value not correct");
 
-              var expectedValue = expectedValues[sdIndex * endDates.length + edIndex];
-              // console.log(input.T("startDate {0} endDate {1} expectedValue {2}", String(startDate), String(endDate), expectedValue));
-              assert.equal(input.value, expectedValue, "value is not calculated correctly");
-            }
-          }
-        }
+          var insertPoint = element.$.insertPoint;
+          var selected = Polymer.dom(insertPoint).querySelector('paper-radio-button[checked]');
+          assert.equal(true, selected === null, "item not selected");
 
-        // when start date and end date are set as attributes
-        // we test for all invalid combinations of start date and end date
-        test('start date and end date set programmatically -> invalid values test', function() {
-          var input = fixture('valueProgrammaticTests');
-          input.format = "YYYY-MM-DD";
+          element.value = "v1";
+          assert.equal("v1", element.value, "initial value not correct");
 
-          assert.equal(input.value, "", 'value is not initially empty');
-
-          var startDates = [null, false, true, [], {}, "", "lorem ipsum", "2016-06-10"];
-          var endDates = [null, false, true, [], {}, "", "lorem ipsum"];
-          var expectedValues = [
-            "null to null", "null to false", "null to true", "null to ", "null to [object Object]", "null to ", "null to lorem ipsum",
-            "false to null", "false to false", "false to true", "false to ", "false to [object Object]", "false to ", "false to lorem ipsum",
-            "true to null", "true to false", "true to true", "true to ", "true to [object Object]", "true to ", "true to lorem ipsum",
-            " to null", " to false", " to true", " to ", " to [object Object]", " to ", " to lorem ipsum",
-            "[object Object] to null", "[object Object] to false", "[object Object] to true", "[object Object] to ", "[object Object] to [object Object]", "[object Object] to ", "[object Object] to lorem ipsum",
-            " to null", " to false", " to true", " to ", " to [object Object]", " to ", " to lorem ipsum",
-            "lorem ipsum to null", "lorem ipsum to false", "lorem ipsum to true", "lorem ipsum to ", "lorem ipsum to [object Object]", "lorem ipsum to ", "lorem ipsum to lorem ipsum",
-            "2016-06-10 to null", "2016-06-10 to false", "2016-06-10 to true", "2016-06-10 to ", "2016-06-10 to [object Object]", "2016-06-10 to ", "2016-06-10 to lorem ipsum",
-          ];
-          GenericProgrammaticTestFunction(input, startDates, endDates, expectedValues);
-
-          var startDates = [null, false, true, [], {}, "", "lorem ipsum"];
-          var endDates = [null, false, true, [], {}, "", "lorem ipsum", "2016-06-10"];
-          expectedValues = [
-            "null to null", "null to false", "null to true", "null to ", "null to [object Object]", "null to ", "null to lorem ipsum", "null to 2016-06-10",
-            "false to null", "false to false", "false to true", "false to ", "false to [object Object]", "false to ", "false to lorem ipsum", "false to 2016-06-10",
-            "true to null", "true to false", "true to true", "true to ", "true to [object Object]", "true to ", "true to lorem ipsum", "true to 2016-06-10",
-            " to null", " to false", " to true", " to ", " to [object Object]", " to ", " to lorem ipsum", " to 2016-06-10",
-            "[object Object] to null", "[object Object] to false", "[object Object] to true", "[object Object] to ", "[object Object] to [object Object]", "[object Object] to ", "[object Object] to lorem ipsum",
-            "[object Object] to 2016-06-10",
-            " to null", " to false", " to true", " to ", " to [object Object]", " to ", " to lorem ipsum", " to 2016-06-10",
-            "lorem ipsum to null", "lorem ipsum to false", "lorem ipsum to true", "lorem ipsum to ", "lorem ipsum to [object Object]", "lorem ipsum to ", "lorem ipsum to lorem ipsum", "lorem ipsum to 2016-06-10",
-          ];
-          GenericProgrammaticTestFunction(input, startDates, endDates, expectedValues);
-
-          // set valid start date and end date
-          input.startDate = "2016-08-15";
-          input.endDate = "2016-08-25";
-          assert.equal("2016-08-15", input.startDate, 'start date is not correct');
-          assert.equal("2016-08-25", input.endDate, 'end date is not correct');
-          assert.equal(input.T("{0} to {1}", "2016-08-15", "2016-08-25"), input.value, "value is not correct");
-          // set start date to undefined; value should not change
-          input.startDate = undefined;
-          assert.equal(undefined, input.startDate, 'start date is not correct');
-          assert.equal("2016-08-25", input.endDate, 'end date is not correct');
-          assert.equal(input.T("{0} to {1}", "2016-08-15", "2016-08-25"), input.value, "value is not correct");
-          // set end date to undefined; value should not change
-          input.endDate = undefined;
-          assert.equal(undefined, input.startDate, 'start date is not correct');
-          assert.equal(undefined, input.endDate, 'end date is not correct');
-          assert.equal(input.T("{0} to {1}", "2016-08-15", "2016-08-25"), input.value, "value is not correct");
+          var insertPoint = element.$.insertPoint;
+          var selected = Polymer.dom(insertPoint).querySelector('paper-radio-button[name=v1]');
+          assert.equal(false, selected === null, "item not selected");
+          assert.equal(true, selected.hasAttribute('checked'), 'item not checked');
+          assert.equal(true, selected.hasAttribute('active'), 'item not active');
         });
 
-        // when start date and end date are set as attributes
-        // we test for valid combinations of start date and end date
-        test('start date and end date set programmatically -> valid values test', function() {
-          var input = fixture('valueProgrammaticTests');
-          input.format = "YYYY-MM-DD";
+        test('xvalue list, value is v1', function() {
+          var element = fixture('propertyTests');
+          element.xvaluelist = initialXvalueList;
+          element.value = "v1";
 
-          assert.equal(input.value, "", 'value is not initially empty');
+          assert.equal(true, areEqual(element.xvaluelist, initialXvalueList), "xvaluelist not set correctly");
+          assert.equal("v1", element.value, "initial value not correct");
 
-          input.startDate = "2016-06-10";
-          input.endDate = "2016-06-17";
-          var expectedValue = input.T("{0} to {1}", "2016-06-10", "2016-06-17");
-          // start date is before end date so we expect a correct value to be produced
-          assert.equal(input.value, expectedValue, "value is not calculated correctly");
-          assert.equal(input.valid, true, "element is not valid");
-
-          input.startDate = "2016-06-17";
-          input.endDate = "2016-06-10";
-          expectedValue = input.T("{0} to {1}", "2016-06-17", "2016-06-10");
-          // start date is after end date so we expect value = "" to be produced and element should be invalid
-          assert.equal(input.value, expectedValue, "value is not calculated correctly");
-          assert.equal(input.valid, false, "element is not invalid");
+          var insertPoint = element.$.insertPoint;
+          var selected = Polymer.dom(insertPoint).querySelector('paper-radio-button[name=v1]');
+          assert.equal(false, selected === null, "item not selected");
+          assert.equal(true, selected.hasAttribute('checked'), 'item not checked');
+          assert.equal(true, selected.hasAttribute('active'), 'item not active');
         });
 
-        function GenericProgrammaticFormatTestFunction(input, formats, expectedValue) {
-          for (var i = 0; i < formats.length; i++) {
-            var format = formats[i];
-            input.format = format;
-            assert.equal(input.value, expectedValue, "value is not calculated correctly");
-          }
-        }
+        test('xvalue list, value is v2', function() {
+          var element = fixture('propertyTests');
+          element.xvaluelist = initialXvalueList;
+          element.value = "v2";
 
-        // here we test if values are correctly formatted using different date formats
-        test('alternative date formats test', function() {
-          var input = fixture('valueProgrammaticTests');
-          var displayInput = input.$.triggerRange;
-          // we do not know what localized format is, so we set the format
-          input.format = "YYYY-MM-DD";
+          assert.equal(true, areEqual(element.xvaluelist, initialXvalueList), "xvaluelist not set correctly");
+          assert.equal("v2", element.value, "initial value not correct");
 
-          assert.equal(input.value, "", 'value is not initially empty');
-
-          input.startDate = "2016-06-10";
-          input.endDate = "2016-06-17";
-          var expectedValue = input.T("{0} to {1}", "2016-06-10", "2016-06-17");
-          var outputValue = expectedValue;
-          // we test if YYYY-MM-DD format is applied correctly
-          assert.equal(input.value, expectedValue, "value is not calculated correctly");
-          assert.equal(expectedValue, displayInput.value, "display value is not correct");
-
-          // we test for invalid format values; invalid format values should be ignored and previous format of YYYY-MM-DD should be used
-          var invalidFormats = [undefined, null, "", {},
-            [], 424242, true, false, "undefined", "null", "true", "false"
-          ];
-          GenericProgrammaticFormatTestFunction(input, invalidFormats, expectedValue);
-
-          // we test YYYY-DD-MM format
-          input.format = "YYYY-DD-MM";
-          expectedValue = input.T("{0} to {1}", "2016-10-06", "2016-17-06");
-          assert.equal(input.value, outputValue, "value is not calculated correctly");
-          assert.equal(displayInput.value, expectedValue, "value is not calculated correctly");
-
-          // we test DD-MM-YYYY format
-          input.format = "DD-MM-YYYY";
-          expectedValue = input.T("{0} to {1}", "10-06-2016", "17-06-2016");
-          assert.equal(input.value, outputValue, "value is not calculated correctly");
-          assert.equal(displayInput.value, expectedValue, "value is not calculated correctly");
-
-          // we test MM-DD-YYYY format
-          input.format = "MM-DD-YYYY";
-          expectedValue = input.T("{0} to {1}", "06-10-2016", "06-17-2016");
-          assert.equal(input.value, outputValue, "value is not calculated correctly");
-          assert.equal(displayInput.value, expectedValue, "value is not calculated correctly");
-
-          // for MM-DD-YYYY format we test if different dates are formatted correctly
-          input.startDate = "2017-06-10";
-          input.endDate = "2017-06-17";
-          expectedValue = input.T("{0} to {1}", "06-10-2017", "06-17-2017");
-          outputValue = input.T("{0} to {1}", "2017-06-10", "2017-06-17")
-          assert.equal(input.value, outputValue, "value is not calculated correctly");
-          assert.equal(displayInput.value, expectedValue, "value is not calculated correctly");
-
-          input.startDate = "2017-06-12";
-          input.endDate = "2017-06-18";
-          expectedValue = input.T("{0} to {1}", "06-12-2017", "06-18-2017");
-          outputValue = input.T("{0} to {1}", "2017-06-12", "2017-06-18")
-          assert.equal(input.value, outputValue, "value is not calculated correctly");
-          assert.equal(displayInput.value, expectedValue, "value is not calculated correctly");
-
-          input.startDate = "2017-04-12";
-          input.endDate = "2017-10-18";
-          expectedValue = input.T("{0} to {1}", "04-12-2017", "10-18-2017");
-          outputValue = input.T("{0} to {1}", "2017-04-12", "2017-10-18")
-          assert.equal(input.value, outputValue, "value is not calculated correctly");
-          assert.equal(displayInput.value, expectedValue, "value is not calculated correctly");
-
-        });
-      });
-
-      suite('tests where .value is set as attribute', function () {
-        test('.value is set to invalid values (1 of 2)', function () {
-          var input = fixture('valueProgrammaticTests');
-          var invalidValues = [ undefined, null, 42, 3.14159, true, false, [], {}, function () { return undefined; }];
-          var invalidValue;
-          var expectedStartDates = ["", "", "", "", "", "", "", "", ""];
-          var expectedEndDates = ["", "", "", "", "", "", "", "", ""];
-          var expectedStartDate;
-          var expectedEndDate;
-
-          for (var i = 0; i < invalidValues.length; i++) {
-            invalidValue = invalidValues[i];
-            Polymer.dom(input).setAttribute('value', invalidValue);
-            expectedStartDate = expectedStartDates[i];
-            expectedEndDate = expectedEndDates[i];
-            assert.equal(expectedStartDate, input.startDate, 'start date value is not correct');
-            assert.equal(expectedEndDate, input.endDate, 'end date value is not correct');
-          }
+          var insertPoint = element.$.insertPoint;
+          var selected = Polymer.dom(insertPoint).querySelector('paper-radio-button[name=v2]');
+          assert.equal(false, selected === null, "item not selected");
+          assert.equal(true, selected.hasAttribute('checked'), 'item not checked');
+          assert.equal(true, selected.hasAttribute('active'), 'item not active');
         });
 
-        test('.value is set to invalid values (2 of 2)', function () {
-          var input = fixture('valueProgrammaticTests');
-          var invalidValues = [ "2016-08-01", "2016-08-01 ", "2016-08-01 to", "2016-08-01 to ", " 2016-08-01", "to 2016-08-01", " to 2016-08-01" ];
-          var invalidValue;
-          var expectedStartDates = [ "", "", "", "2016-08-01", "", "", "" ];
-          var expectedEndDates = [ "", "", "", "", "", "", "2016-08-01" ];
-          var expectedStartDate;
-          var expectedEndDate;
+        test('xvalue list, value is v3', function() {
+          var element = fixture('propertyTests');
+          element.xvaluelist = initialXvalueList;
+          element.value = "v3";
 
-          for (var i = 0; i < invalidValues.length; i++) {
-            invalidValue = invalidValues[i];
-            Polymer.dom(input).setAttribute('value', invalidValue);
-            expectedStartDate = expectedStartDates[i];
-            expectedEndDate = expectedEndDates[i];
-            assert.equal(expectedStartDate, input.startDate, 'start date value is not correct');
-            assert.equal(expectedEndDate, input.endDate, 'end date value is not correct');
-          }
+          assert.equal(true, areEqual(element.xvaluelist, initialXvalueList), "xvaluelist not set correctly");
+          assert.equal("v3", element.value, "initial value not correct");
+
+          var insertPoint = element.$.insertPoint;
+          var selected = Polymer.dom(insertPoint).querySelector('paper-radio-button[name=v3]');
+          assert.equal(false, selected === null, "item not selected");
+          assert.equal(true, selected.hasAttribute('checked'), 'item not checked');
+          assert.equal(true, selected.hasAttribute('active'), 'item not active');
         });
 
-        test('.value is set to valid values', function () {
-          var input = fixture('valueProgrammaticTests');
-          var invalidValues = [ "2016-08-01 to 2016-08-30", "2016-08-30 to 2016-08-01"];
-          var invalidValue;
-          var expectedStartDates = [ "2016-08-01", "2016-08-30" ];
-          var expectedEndDates = [ "2016-08-30", "2016-08-01" ];
-          var expectedStartDate;
-          var expectedEndDate;
+        test('xvalue list, value is v10', function() {
+          var element = fixture('propertyTests');
+          element.xvaluelist = initialXvalueList;
+          element.value = "v10";
 
-          for (var i = 0; i < invalidValues.length; i++) {
-            invalidValue = invalidValues[i];
-            Polymer.dom(input).setAttribute('value', invalidValue);
-            expectedStartDate = expectedStartDates[i];
-            expectedEndDate = expectedEndDates[i];
-            assert.equal(expectedStartDate, input.startDate, 'start date value is not correct');
-            assert.equal(expectedEndDate, input.endDate, 'end date value is not correct');
-          }
+          assert.equal(true, areEqual(element.xvaluelist, initialXvalueList), "xvaluelist not set correctly");
+          assert.equal("v10", element.value, "initial value not correct");
 
+          var insertPoint = element.$.insertPoint;
+          var selected = Polymer.dom(insertPoint).querySelector('paper-radio-button[name=v10]');
+          assert.equal(true, selected === null, "item is selected");
         });
 
       });
 
-      suite('tests where .value is set in code', function () {
-        test('.value is set to invalid values (1 of 2)', function () {
-          var input = fixture('valueProgrammaticTests');
-          var invalidValues = [ undefined, null, 42, 3.14159, true, false, [], {}, function () { return undefined; }];
-          var invalidValue;
-          var expectedStartDates = ["", null, "", "", "", "", "", "", ""];
-          var expectedEndDates = ["", null, "", "", "", "", "", "", ""];
-          var expectedStartDate;
-          var expectedEndDate;
-
-          for (var i = 0; i < invalidValues.length; i++) {
-            invalidValue = invalidValues[i];
-            input.value = invalidValue;
-            expectedStartDate = expectedStartDates[i];
-            expectedEndDate = expectedEndDates[i];
-            assert.equal(expectedStartDate, input.startDate, 'start date value is not correct');
-            assert.equal(expectedEndDate, input.endDate, 'end date value is not correct');
-          }
-        });
-
-        test('.value is set to invalid values (2 of 2)', function () {
-          var input = fixture('valueProgrammaticTests');
-          var invalidValues = [ "2016-08-01", "2016-08-01 ", "2016-08-01 to", "2016-08-01 to ", " 2016-08-01", "to 2016-08-01", " to 2016-08-01" ];
-          var invalidValue;
-          var expectedStartDates = [ "", "", "", "2016-08-01", "", "", "" ];
-          var expectedEndDates = [ "", "", "", "", "", "", "2016-08-01" ];
-          var expectedStartDate;
-          var expectedEndDate;
-
-          for (var i = 0; i < invalidValues.length; i++) {
-            invalidValue = invalidValues[i];
-            input.value = invalidValue;
-            expectedStartDate = expectedStartDates[i];
-            expectedEndDate = expectedEndDates[i];
-            assert.equal(expectedStartDate, input.startDate, 'start date value is not correct');
-            assert.equal(expectedEndDate, input.endDate, 'end date value is not correct');
-          }
-
-        });
-
-        test('.value is set to valid values', function () {
-          var input = fixture('valueProgrammaticTests');
-          var invalidValues = [ "2016-08-01 to 2016-08-30", "2016-08-30 to 2016-08-01"];
-          var invalidValue;
-          var expectedStartDates = [ "2016-08-01", "2016-08-30" ];
-          var expectedEndDates = [ "2016-08-30", "2016-08-01" ];
-          var expectedStartDate;
-          var expectedEndDate;
-
-          for (var i = 0; i < invalidValues.length; i++) {
-            invalidValue = invalidValues[i];
-            input.value = invalidValue;
-            expectedStartDate = expectedStartDates[i];
-            expectedEndDate = expectedEndDates[i];
-            assert.equal(expectedStartDate, input.startDate, 'start date value is not correct');
-            assert.equal(expectedEndDate, input.endDate, 'end date value is not correct');
-          }
-
-        });
-      });
     });
   </script>
 

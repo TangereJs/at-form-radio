@@ -130,14 +130,12 @@
 
         test('initial value is empty', function() {
           var input = fixture('initialValue');
-
           assert.equal('', input.value, 'initial value is not correct');
-          var inputElement = input._getFocusableElement();
-          assert.equal("", inputElement.value, 'inputElement.value is not correct');
         });
 
-        test('initial value is ', function() {
+        test('initial value is lorem ipsum', function() {
           var element = fixture('initialValueAsAttribute');
+          assert.equal('lorem ipsum', element.value, 'initial value is not correct');
         });
 
         test('required sets validation message', function() {
@@ -151,12 +149,16 @@
 
         test('disabled sets css classes', function() {
           var input = fixture('disabled');
+          input.xvaluelist = [{ title:"t1", value: "v1" },{ title:"t2", value: "v2" },{ title:"t3", value: "v3" }];
+          input._xvaluelistChanged(input.xvaluelist, undefined);
           assert.equal(input.disabled, true, 'disabled property is true');
 
-          var inputElement = input._getFocusableElement();
-          assert.equal(inputElement.hasAttribute('disabled'), true, 'input element disabled attribute not set');
-          assert.equal(input.$.triggerRangeIcon.hasAttribute('disabled'), true, 'input icon does not have disabled class');
           assert.equal(input.$.atContainer.classList.contains('disabled'), true, 'container does not have disabled class');
+          var insertPoint = input.$.insertPoint;
+          var radios = Polymer.dom(insertPoint).children;
+          radios.forEach(function (radio, index) {
+            assert.equal(true, radio.hasAttribute('disabled'), 'individual elements are not disabled');
+          });
         });
 
         test('hidden sets css classes', function() {

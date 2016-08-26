@@ -52,12 +52,24 @@
       behaviors: [Tangere.behaviors.i18n, Tangere.behaviors.formUIGeneric, Tangere.behaviors.AtFormRadioInputValidation ],
       properties: {
 
+        /**
+         * Element's label for element display purposes
+         * @property label
+         * @type String
+         * @default ""
+         */
         label: {
           type: String,
           value: '',
           title: 'Label'
         },
 
+        /**
+         * When true label is hidden
+         * @property hideLabel
+         * @type Boolean
+         * @default false
+         */
         hideLabel: {
           type: Boolean,
           value: false,
@@ -65,6 +77,12 @@
           title: 'Do not show the label'
         },
 
+        /**
+         * Element's disabled state
+         * @property disabled
+         * @type Boolean
+         * @default false
+         */
         disabled: {
           type: Boolean,
           value: false,
@@ -85,12 +103,24 @@
           title: 'Field is invisible'
         },
 
+        /**
+         * Element's required state for element validation purposes
+         * @property required
+         * @type Boolean
+         * @default false
+         */
         required: {
           type: Boolean,
           value: false,
           title: 'Input required'
         },
 
+        /**
+         * Element's value
+         * @property value
+         * @type String
+         * @default ""
+         */
         value: {
           type: String,
           value: '',
@@ -98,13 +128,12 @@
           title: 'Value'
         },
 
-        // ------------------------------------------------------------
-        // valuelist renamed to xvaluelist is here to improve compatibility with copyProperties function in at-core-form/script/schema-helpers.js
-        // this function goes through element properties and copies property values from property definition in json schema to element properties
-        // now valuelist doens't exist in property definition in json schema so undefined will be copied
-        // xvaluelist exists in json schema and when property name is valuelist, xvaluelist should be copied
-        // so we introduce xvaluelist property in at-form-radio to remove if statement that would detect this situation
-        // ------------------------------------------------------------
+        /**
+         * List of availble options provided as array of { title, value } pairs
+         * @property xvaluelist
+         * @type Array
+         * @default []
+         */
         xvaluelist: {
           type: Array,
           value: function() {
@@ -224,9 +253,10 @@
 
       _xvaluelistChanged: function(newValue, oldValue) {
         var self = this;
+        var radioGroup = this.$.insertPoint;
 
         // clear previous html
-        Polymer.dom(this.$.insertPoint).innerHTML = '';
+        Polymer.dom(radioGroup).innerHTML = '';
 
         // newValue can be CSV or array; detection needed and normlization to array
         newValue = this._convertToArray(newValue);
@@ -237,8 +267,13 @@
 
         newValue.forEach(function(element, index, array) {
           var fieldHtml = self._constructRadioField(element, self.disabled);
-          Polymer.dom(self.$.insertPoint).appendChild(fieldHtml);
+          Polymer.dom(radioGroup).appendChild(fieldHtml);
         });
+
+        // *ij* Magic Level 10
+        // paper-radio-group populates its items from distributed children
+        // we need to call _updateItems so this is done after we append new children
+        radioGroup._updateItems();
 
         if (newValue.length > 0) {
           var inputValue = this.value;
