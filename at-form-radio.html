@@ -209,13 +209,13 @@
 
       _internalValidStateUpdate: function(disabled, required) {
         if (this._isReady) {
-          this.validate(true);
+          this.validate();
         }
       },
 
       validate: function (showError) {
         if (showError === undefined) { showError = this.autovalidate; }
-
+        
         var validationResult = this._validateBaseData();
         if(showError) this._handleValidationResult(validationResult);
         if (validationResult.isFinal) {
