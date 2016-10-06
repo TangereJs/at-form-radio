@@ -246,11 +246,9 @@
         if (this._isString(newValue)) {
           var radioGroup = this.$.insertPoint;
           radioGroup.select(newValue);
-
-          if (this.autoValidate) {
-            this.validate(true);
-          }
         }
+
+        if (this.autoValidate) { this.validate(true); }
 
         this._fireValueChangedEvent(newValue);
       },
