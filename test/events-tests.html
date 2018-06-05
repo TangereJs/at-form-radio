@@ -120,7 +120,7 @@
           flush(function() {
             var insertPoint = input.$.insertPoint;
             var radios = Polymer.dom(insertPoint).children;
-            radios.forEach(function(radio, index) {
+            Array.prototype.forEach.call(radios, function(radio, index) {
               var item = input.xvaluelist[index];
               assert.equal(radio.getAttribute("name"), item.value, "radio name not set correctly");
               if (radio.shadowRoot === undefined) {
@@ -168,7 +168,7 @@
           flush(function() {
             var insertPoint = input.$.insertPoint;
             var radios = Polymer.dom(insertPoint).children;
-            radios.forEach(function(radio, index) {
+            Array.prototype.forEach.call(radios, function(radio, index) {
               var item = input.xvaluelist[index];
               assert.equal(radio.getAttribute("name"), item.value, "radio name not set correctly");
               if (radio.shadowRoot === undefined) {
@@ -220,7 +220,7 @@
             flush(function() {
               var insertPoint = input.$.insertPoint;
               var radios = Polymer.dom(insertPoint).children;
-              radios.forEach(function(radio, index) {
+              Array.prototype.forEach.call(radios, function(radio, index) {
                 var item = input.xvaluelist[index];
                 assert.equal(radio.getAttribute("name"), item.value, "radio name not set correctly");
                 if (radio.shadowRoot === undefined) {

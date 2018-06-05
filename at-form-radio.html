@@ -11,12 +11,12 @@
   <template>
     <style include="at-form-common"></style>
     <style>
-      :host * {
-        box-sizing: border-box;
+      :host {
+        @apply --at-form-host;
       }
 
-      :host {
-        @apply(--at-form-host);
+      :host * {
+        box-sizing: border-box;
       }
 
       paper-radio-button.error {
@@ -230,6 +230,8 @@
       },
 
       _updateUIValidState: function(isValid) {
+        if (!this.$) return;
+
         var label = this.$.label;
         this.toggleClass('error', !isValid, label);
         var insertPoint = this.$.insertPoint;
