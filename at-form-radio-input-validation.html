@@ -196,7 +196,7 @@
 
         validationResult.isValid = false;
         xvaluelist.forEach(function(item, index) {
-          validationResult.isValid = validationResult.isValid || item.value === value;
+          validationResult.isValid = validationResult.isValid || item.value == value;
         });
 
         if (!validationResult.isValid) {
